@@ -27,7 +27,7 @@ class Queue {
     }
 
     void enqueue(int n) {
-        if(front == -1 && rear == -1) {
+        if(isEmpty()) {
             front++;
             rear++;
             arr[rear] = n;
@@ -62,7 +62,7 @@ class Queue {
     }
 
     void display() {
-        if(front == -1 && rear == -1) {
+        if(isEmpty()) {
             cout << "Cannot display !! Queue is empty !!\n";
         }
         else {

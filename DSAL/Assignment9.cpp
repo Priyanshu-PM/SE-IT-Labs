@@ -3,7 +3,6 @@
 // theory : https://www.geeksforgeeks.org/heap-sort/
 // heap sort complexity is nlogn while heap complexity is n
 
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -79,13 +78,15 @@ void printArray(int arr[], int n) {
 
 int main() {
 
-    int n;
-    cout <<"Enter the number of elements in the array : ";
-    cin >> n;
-    int arr[n];
-    for(int i = 0; i < n; i++) {
-        cin >> arr[i];
-    }
+    // int n;
+    // cout <<"Enter the number of elements in the array : ";
+    // cin >> n;
+    // int arr[n];
+    // for(int i = 0; i < n; i++) {
+    //     cin >> arr[i];
+    // }
+    int n = 8;
+    int arr[] = {1, 4, 6, 2, 10, 6, 13, 3};
 
     cout << "\nPrinting the input array \n";
     printArray(arr, n);

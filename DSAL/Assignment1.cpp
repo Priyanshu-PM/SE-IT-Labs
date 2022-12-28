@@ -15,7 +15,6 @@ struct stud
 // creation of the database
 void createDatabase(stud students[], int n)
 {
-
     for (int i = 0; i < n; i++)
     {
         cout << "\nEnter the details of the "<< " student "<< (i + 1) << " : ";
@@ -39,7 +38,7 @@ void displayDatabase(stud students[], int n)
 
 void selectionSort(stud students[], int n)
 {
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n-1; i++)
     {
         for (int j = i + 1; j < n; j++)
         {
@@ -116,7 +115,7 @@ void quickSort(stud students[], int start, int end)
 }
 
 // linear search algorithm
-void binarySearch(stud students[], int n)
+void linearSearch(stud students[], int n)
 {
     float ssgpa;
     cout << "Enter the sgpa to search : ";
@@ -127,6 +126,7 @@ void binarySearch(stud students[], int n)
         if (students[i].sgpa == ssgpa)
         {
             flag = true;
+            cout << "Found student with same sgpa \n";
             cout << students[i].rollno << setw(15) << students[i].name << setw(10) << students[i].sgpa << endl;
         }
     }
@@ -138,40 +138,60 @@ void binarySearch(stud students[], int n)
 
 
 // binary search algorithm for searching students using their name
-void linearSearch(stud students[], int n)
-{
+void binarySearchWithName(stud students[], int n) {
 
-    int low = 0, high = n - 1;
-    char search_Name[20];
+    char key[20];
+    cout << "Enter the name to search :";
+    cin >> key;
+    int low = 0, high = n-1;
     bool flag = false;
-    cout << "Enter the name to be searched : ";
-    cin >> search_Name;
-    while (low <= high)
-    {
-        int mid = low + high - low / 2;
+    while(low <= high) {
 
-        if (students[mid].name == search_Name)
-        {
+        int mid = (low+high)/2;
+
+        if(strcmp(students[mid].name, key) == 0) {
             flag = true;
-            cout << "Record found with roll no : " << students[mid].rollno << "having same name\n";
+            cout << "Found record with given name : \n";
+            cout << students[mid].rollno << setw(10) << students[mid].name << setw(15) << students[mid].sgpa<< endl;
+            break;
+
         }
-        else  
-        {
-            if (students[mid].name > search_Name)
-            {
-                high = mid - 1;
+        else {
+            if(strcmp(students[mid].name, key) > 0) {
+                high = mid -1;
             }
 
-            else if (students[mid].name < search_Name)
-            {
-                low = mid + 1;
+            else {
+                low = mid +1;
             }
         }
     }
-    if(flag == false) {
-        cout << "No student found with required name !!\n\n";
+
+    if(!flag) {
+        cout << "No record found with given name !!\n";
     }
 }
+
+// void linearSearch(stud students[], int n)
+// {
+
+//     int low = 0, high = n - 1;
+//     char search_Name[20];
+//     bool flag = false;
+//     cout << "Enter the name to be searched : ";
+//     cin >> search_Name;
+
+//     for(int i = 0; i < n; i++) {
+//         if(strcmp(students[i].name, search_Name) == 0) {
+//             flag =true;
+//             cout << "Found student with given name :\n";
+//             cout << students[i].rollno <<setw(15) << students[i].name << setw(15) << students[i].sgpa << endl; 
+//         }
+//     }
+//     if(flag == false) {
+//         cout << "No student found with required name !!\n";
+//     }
+// }
 
 
 // main method (Driver code)
@@ -199,9 +219,12 @@ int main()
     quickSort(students, 0, n-1);
     displayDatabase(students, n);
 
-    linearSearch(students, n);
+    insertionSort(students, n);
+    cout << "\nname wise sorting !!\n";
+    displayDatabase(students, n);
+    // linearSearch(students, n);
     cout << "\n\n";
-    binarySearch(students, n);
+    binarySearchWithName(students, n);
 
     // int choice = 0;
     // do

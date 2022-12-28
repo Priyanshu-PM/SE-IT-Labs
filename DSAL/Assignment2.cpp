@@ -156,57 +156,62 @@ string infixToPrefix(string str)
     return reverse(ans);
 }
 
-int evalPostfix(string exp) {
+int evalPostfix(string exp)
+{
 
     Stack<int> s1;
 
-    for(int i = 0; i< exp.length(); i++) {
+    for (int i = 0; i < exp.length(); i++)
+    {
 
-        if(exp[i] == ' ') continue;
-        if(isdigit(exp[i])) {
+        if (exp[i] == ' ')
+            continue;
+        if (isdigit(exp[i]))
+        {
             s1.push((int)(exp[i] - '0'));
         }
 
-        else {
+        else
+        {
             int val1 = s1.stackTop();
             s1.pop();
 
             int val2 = s1.stackTop();
             s1.pop();
 
-            cout << "val1 " << val1 << " val2 "<<val2<<endl;
+            cout << "val1 " << val1 << " val2 " << val2 << endl;
 
-            switch(exp[i]) {
-                case '+':
-                {
-                    s1.push(val2+val1);
-                    break;
-                }
+            switch (exp[i])
+            {
+            case '+':
+            {
+                s1.push(val2 + val1);
+                break;
+            }
 
-                case '-':
-                {
-                    s1.push(val2 - val1);
-                    break;
-                }
+            case '-':
+            {
+                s1.push(val2 - val1);
+                break;
+            }
 
-                case '*':
-                {
-                    s1.push(val2*val1);
-                    break;
-                }
+            case '*':
+            {
+                s1.push(val2 * val1);
+                break;
+            }
 
-                case '/':
-                {
-                    s1.push(val2/val1);
-                    break;
-                }
+            case '/':
+            {
+                s1.push(val2 / val1);
+                break;
+            }
 
-                case '^':
-                {
-                    s1.push(pow(val2, val1));
-                    break;
-                }
-
+            case '^':
+            {
+                s1.push(pow(val2, val1));
+                break;
+            }
             }
         }
     }
@@ -223,13 +228,14 @@ int evalPostfix(string exp) {
 //     return ans;
 // }
 
-int evalPrefix(string str) {
+int evalPrefix(string str)
+{
 
     string exp = reverse(str);
     int ans = evalPostfix(exp);
     return ans;
-
 }
+
 int main()
 {
 
@@ -241,6 +247,6 @@ int main()
     //      << answer << "\n";
 
     cout << evalPostfix("8 4 7 * +") << endl;
-    
-    cout << evalPrefix("+ * 7 9 6") <<endl;
+
+    cout << evalPrefix("+ * 7 9 6") << endl;
 }
