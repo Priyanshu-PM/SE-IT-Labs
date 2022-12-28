@@ -12,6 +12,20 @@ class Queue {
         rear = -1;
     }
 
+    bool isEmpty() {
+        if(front == -1 && rear == -1) {
+            return true;
+        }
+        return false;
+    }
+
+    bool isFull() {
+        if((rear+1)%MAX == front) {
+            return true;
+        }
+        return false;
+    }
+
     void enqueue(int n) {
         if(front == -1 && rear == -1) {
             front++;
@@ -19,7 +33,7 @@ class Queue {
             arr[rear] = n;
         }
 
-        else if((rear+1)%MAX == front) {
+        else if(isFull()) {
             cout << "Queue is overflow !!\n";
         }
         else {
@@ -30,7 +44,7 @@ class Queue {
     }
 
     void dequeue() {
-        if(front == -1 && rear == -1) {
+        if(isEmpty()) {
             cout << "Queue is underflow !!\n";
         }
 
@@ -58,6 +72,7 @@ class Queue {
                 i = (i+1)%MAX;
 
             }while((rear+1)%MAX != i);
+            cout << "\n";
         }
     }
 };
@@ -71,7 +86,7 @@ int main() {
     a1.enqueue(10);
     a1.enqueue(13);
     a1.enqueue(33);
-
+    a1.display();
     a1.dequeue();
 
     a1.enqueue(100);

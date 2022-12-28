@@ -73,7 +73,7 @@ void insertionSort(stud students[], int n)
     int j;
     for (int i = 1; i < n; i++)
     {
-        key =students[i];
+        key = students[i];
         j = i-1;
         while(j>=0 && strcmp(students[j].name, key.name) > 0) {
 
@@ -87,7 +87,7 @@ void insertionSort(stud students[], int n)
 int partition(stud students[], int start, int end)
 {
 
-    int pivot = students[start].sgpa;
+    float pivot = students[start].sgpa;
     int i = start;
     int j = end;
     while(i < j)
@@ -116,7 +116,7 @@ void quickSort(stud students[], int start, int end)
 }
 
 // linear search algorithm
-void linearSearch(stud students[], int n)
+void binarySearch(stud students[], int n)
 {
     float ssgpa;
     cout << "Enter the sgpa to search : ";
@@ -138,7 +138,7 @@ void linearSearch(stud students[], int n)
 
 
 // binary search algorithm for searching students using their name
-void binarySearch(stud students[], int n)
+void linearSearch(stud students[], int n)
 {
 
     int low = 0, high = n - 1;
