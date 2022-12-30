@@ -132,11 +132,11 @@ class Database {
 int main() {
 
     Database db("priyanshu.txt");
-    // Student s1 = s1.takeInput();
-    // db.addStudent(s1);
+    Student s1 = s1.takeInput();
+    db.addStudent(s1);
 
-    // s1 = s1.takeInput();
-    // db.addStudent(s1);
+    s1 = s1.takeInput();
+    db.addStudent(s1);
 
     db.displayDatabase();
 
