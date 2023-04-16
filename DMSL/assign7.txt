@@ -1,15 +1,15 @@
 ============================================================================ Assignment 7 ===============================================================================
 
 
-mysql> insert into customers(FirstName, LastName, Address, Phone_no, email) values("priyanshu", "mahukhaye", "nagpur", "8797972122", "priyanshupict@gmail.com"), ("somesh", "somani", "pune", "9784646464", "someshsomani457@gmail.com");
+mysql> insert into customers(FirstName, LastName, Address, Phone_no) values("priyanshu", "mahukhaye", "nagpur", "8797972122"), ("somesh", "somani", "pune","9784646464");
 Query OK, 2 rows affected (0.01 sec)
 Records: 2  Duplicates: 0  Warnings: 0
 
-mysql> insert into customers(FirstName, LastName, Address, Phone_no, email) values("om", "nikam", "nagpur", "8792312122", "om@gmail.com"), ("shitanshu", "badwaik", "pune", "9789231464", "shitanshu@gmail.com");
+mysql> insert into customers(FirstName, LastName, Address, Phone_no) values("om", "nikam", "nagpur", "8792312122"), ("shitanshu", "badwaik", "pune", "9789231464");
 Query OK, 2 rows affected (0.01 sec)
 Records: 2  Duplicates: 0  Warnings: 0
 
-mysql> insert into customers(FirstName, LastName, Address, Phone_no, email) values("sudarshan", "patil", "sangli", "8792318572", "sudarshan@gmail.com"), ("rushikesh", "dhaygude", "pune", "9783541464", "rushi@gmail.com");
+mysql> insert into customers(FirstName, LastName, Address, Phone_no) values("sudarshan", "patil", "sangli", "8792318572"), ("rushikesh", "dhaygude", "pune", "9783541464");
 Query OK, 2 rows affected (0.01 sec)
 Records: 2  Duplicates: 0  Warnings: 0
 
