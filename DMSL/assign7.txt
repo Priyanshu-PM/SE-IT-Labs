@@ -37,14 +37,14 @@ mysql> select * from sellers;
 3 rows in set (0.01 sec)
 
 mysql> select * from products;
-+----+------------------+--------------------------------------------------------------------+-----+-------+------------------+-------------------------------+
-| id | name             | description                                                        | qty | price | discounted_price | img_urls                      |
-+----+------------------+--------------------------------------------------------------------+-----+-------+------------------+-------------------------------+
-|  1 | air-jordan       | A sporty and comfortable sport shoes                               |  10 |   999 |              499 | https://picsum.photos/200/300 |
-|  2 | Tshirt           | A shirt is a piece of clothing worn on your body                   |  10 |   999 |              499 | https://picsum.photos/200/300 |
-|  3 | black shirt      | A shirt is a piece of clothing worn on the upper part of your body |  10 |   999 |              499 | https://picsum.photos/200/300 |
-|  4 | red sports wear  | durable sports wear                                                |  15 |   699 |              499 | https://picsum.photos/200/300 |
-|  5 | black cap        | Perfect cap for summer                                             |  10 |   299 |              199 | https://picsum.photos/200/300 |
-|  6 | black tshirt     | durable sports wear                                                |  15 |   699 |              499 | https://picsum.photos/200/300 |
-+----+------------------+--------------------------------------------------------------------+-----+-------+------------------+-------------------------------+
++----+------------------+--------------------------------------------------------------------+----------+-------+------------------+-------------------------------+
+| Id | Name             | Description                                                        | Quantity | price | discounted_price | img_urls                      |
++----+------------------+--------------------------------------------------------------------+----------+-------+------------------+-------------------------------+
+|  1 | air-jordan       | A sporty and comfortable sport shoes                               |    10    |  1500 |             1400 | https://picsum.photos/200/300 |
+|  2 | Tshirt           | A shirt is a piece of clothing worn on your body                   |    30    |  1299 |             1199 | https://picsum.photos/200/300 |
+|  3 | black shirt      | A shirt is a piece of clothing worn on the upper part of your body |    20    |  599  |              499 | https://picsum.photos/200/300 |
+|  4 | red sports wear  | durable sports wear                                                |    40    |  699  |              499 | https://picsum.photos/200/300 |
+|  5 | black cap        | Perfect cap for summer                                             |    30    |  1599 |             1499 | https://picsum.photos/200/300 |
+|  6 | black tshirt     | durable sports wear                                                |    10    |  1699 |             1599 | https://picsum.photos/200/300 |
++----+------------------+--------------------------------------------------------------------+----------+-------+------------------+-------------------------------+
 6 rows in set (0.00 sec)
