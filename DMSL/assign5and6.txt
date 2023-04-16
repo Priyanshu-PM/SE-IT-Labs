@@ -49,6 +49,21 @@ mysql> desc orders;
 +-------+-----------+------+-----+-------------------+-------------------+
 4 rows in set (0.04 sec)
 
+mysql> create table sellers(id integer auto_increment, email varchar(20) not null, brand_name varchar(30) not null, gst_no varchar(15) not null, phone_no varchar(10) not null, primary key(id));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc sellers;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| id         | int         | NO   | PRI | NULL    | auto_increment |
+| email      | varchar(20) | NO   |     | NULL    |                |
+| brand_name | varchar(30) | NO   |     | NULL    |                |
+| gst_no     | varchar(15) | NO   |     | NULL    |                |
+| phone_no   | varchar(10) | NO   |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
 // Adding check constraints
 
 mysql> create table checkTest(id int not null auto_increment, age int not null, primary key(id), check(age>=18), check(age<100));
@@ -155,10 +170,11 @@ mysql> show tables;
 | customers              |
 | orders                 |
 | products               |
+| sellers                |
 | checkTest              |
 | temp                   |
 +------------------------+
-5 rows in set (0.00 sec)
+6 rows in set (0.00 sec)
 
 mysql> drop table temp;
 Query OK, 0 rows affected (0.02 sec)
@@ -170,9 +186,10 @@ mysql> show tables;
 | customers              |
 | orders                 |
 | products               |
+| sellers                |
 | checkTest              |
 +------------------------+
-4 rows in set (0.01 sec)
+5 rows in set (0.01 sec)
 
 mysql> drop table checkTest;
 Query OK, 0 rows affected (0.02 sec)
@@ -184,6 +201,7 @@ mysql> show tables;
 | customers              |
 | orders                 |
 | products               |
+| sellers                |
 +------------------------+
-3 rows in set (0.01 sec)
+4 rows in set (0.01 sec)
 
