@@ -179,7 +179,7 @@ int evalPostfix(string exp)
             int val2 = s1.stackTop();
             s1.pop();
 
-            cout << "val1 " << val1 << " val2 " << val2 << endl;
+            // cout << "val1 " << val1 << " val2 " << val2 << endl;
 
             switch (exp[i])
             {
@@ -238,7 +238,11 @@ int evalPrefix(string str)
 
 int main()
 {
-
+    string exp;
+    cout << "Enter the data to be converted into postfix : ";
+    cin >> exp;
+    string ans = infixToPostfix(exp);
+    cout << "answer is : "<<ans << endl;
     // string str;
     // cout << "enter the string : ";
     // cin >> str;

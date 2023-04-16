@@ -5,7 +5,7 @@ using namespace std;
 class Queue {
     public:
     int arr[MAX];
-    int front, rear;
+    int front = -1, rear = -1;
     
     Queue() {
         front = -1;
