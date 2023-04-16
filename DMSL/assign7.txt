@@ -13,3 +13,38 @@ mysql> insert into customers(FirstName, LastName, Address, Phone_no) values("sud
 Query OK, 2 rows affected (0.01 sec)
 Records: 2  Duplicates: 0  Warnings: 0
 
+mysql> select * from customers;
++----+-----------+-----------+---------+------------+
+| Id | FirstName | LastName  | Address | Phone_no   |
++----+-----------+-----------+---------+------------+
+|  1 | priyanshu | mahukhaye | nagpur  | 8797972122 |
+|  2 | somesh    | somani    | pune    | 9784646464 |
+|  3 | om        | nikam     | nagpur  | 8792312122 |
+|  4 | shitanshu | badwaik   | pune    | 9789231464 |
+|  5 | sudarshan | patil     | sangli  | 8792318572 |
+|  6 | rushikesh | dhaygude  | pune    | 9783541464 |
++----+-----------+-----------+---------+------------+
+6 rows in set (0.01 sec)
+
+mysql> select * from sellers;
++----+----------------------+------------+--------+------------+
+| id | email                | brand_name | gst_no | phone_no   |
++----+----------------------+------------+--------+------------+
+|  1 | gucci@gmail.com      | gucci      | 68767  | 9897643655 |
+|  2 | nike@gmail.com       | nike       | 3464   | 9794243651 |
+|  3 | pumaglobal@gmail.com | puma       | 63567  | 9897612795 |
++----+----------------------+------------+--------+------------+
+3 rows in set (0.01 sec)
+
+mysql> select * from products;
++----+------------------+--------------------------------------------------------------------+-----+-------+------------------+-------------------------------+
+| id | name             | description                                                        | qty | price | discounted_price | img_urls                      |
++----+------------------+--------------------------------------------------------------------+-----+-------+------------------+-------------------------------+
+|  1 | air-jordan       | A sporty and comfortable sport shoes                               |  10 |   999 |              499 | https://picsum.photos/200/300 |
+|  2 | Tshirt           | A shirt is a piece of clothing worn on your body                   |  10 |   999 |              499 | https://picsum.photos/200/300 |
+|  3 | black shirt      | A shirt is a piece of clothing worn on the upper part of your body |  10 |   999 |              499 | https://picsum.photos/200/300 |
+|  4 | red sports wear  | durable sports wear                                                |  15 |   699 |              499 | https://picsum.photos/200/300 |
+|  5 | black cap        | Perfect cap for summer                                             |  10 |   299 |              199 | https://picsum.photos/200/300 |
+|  6 | black tshirt     | durable sports wear                                                |  15 |   699 |              499 | https://picsum.photos/200/300 |
++----+------------------+--------------------------------------------------------------------+-----+-------+------------------+-------------------------------+
+6 rows in set (0.00 sec)
