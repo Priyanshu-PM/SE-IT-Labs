@@ -124,9 +124,6 @@ mysql> alter table customers add column Dob int not null default 18;
 Query OK, 0 rows affected (0.10 sec)
 Records: 0  Duplicates: 0  Warnings: 0
 
-mysql> alter table customers add column email varchar(30);
-Query OK, 0 rows affected (0.08 sec)
-Records: 0  Duplicates: 0  Warnings: 0
 
 mysql> desc customers;
 +-----------+-------------+------+-----+---------+----------------+
@@ -138,7 +135,6 @@ mysql> desc customers;
 | Address   | varchar(50) | YES  |     | NULL    |                |
 | Phone_no  | varchar(10) | YES  |     | NULL    |                |
 | Dob       | int         | NO   |     | 18      |                |
-| email     | varchar(30) | YES  |     | NULL    |                |
 +-----------+-------------+------+-----+---------+----------------+
 7 rows in set (0.04 sec)
 
@@ -155,7 +151,6 @@ mysql> desc customers;
 | LastName  | varchar(20) | NO   |     | NULL    |                |
 | Address   | varchar(50) | YES  |     | NULL    |                |
 | Phone_no  | varchar(10) | YES  |     | NULL    |                |
-| email     | varchar(30) | YES  |     | NULL    |                |
 +-----------+-------------+------+-----+---------+----------------+
 6 rows in set (0.02 sec)
 
