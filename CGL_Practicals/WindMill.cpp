@@ -1,8 +1,8 @@
-//PROBLEM STATEMENT:-WRITE A PROGRAME IN OPENGL ON LINUX PERFORM TO ANIMATE ANY ONE SCENE (WIND MILL)
+//  Problem Statement : Write a program in opengl to animate any one scene (Windmill)
 
 #include <GL/glut.h>
 #include <bits/stdc++.h>
-#include<math.h>
+#include <iostream>
 
 using namespace std;
 
@@ -12,7 +12,7 @@ void drawWindMill()
 {
     int i;
 
-    glColor3f(1.0 , 1.0, 0.0);
+    glColor3f(1.0, 1.0, 0.0);
 
     glBegin(GL_POLYGON);
     glVertex2f(-0.05, 0);
@@ -23,7 +23,6 @@ void drawWindMill()
 
     glTranslatef(0, 3, 0);
     glColor3f(1.0, 0.0, 0.0);
-
     glRotated(frameNumber*(180.0/45), 0, 0, 1);
 
     for(i = 0; i < 4; i++)
@@ -34,7 +33,9 @@ void drawWindMill()
         glVertex2f(1.0, 0.2);
         glVertex2f(1.0, -0.2);
         glEnd();
+        glFlush();
     }
+
 }
 
 void display()
@@ -55,7 +56,6 @@ void display()
     glPopMatrix();
 
     glutSwapBuffers();
-
 }
 
 void doFrame(int v)
@@ -72,7 +72,6 @@ void initialize(void)
     glMatrixMode(GL_PROJECTION);
     glOrtho(0, 7, -1, 4, -1, 1);
     glMatrixMode(GL_MODELVIEW);
-
 }
 
 int main(int argc, char **argv)
@@ -80,13 +79,12 @@ int main(int argc, char **argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE);
     glutInitWindowPosition(0, 0);
-    glutInitWindowSize(700, 500);
-    glutCreateWindow("WindMill");
+    glutInitWindowSize(900, 800);
+    glutCreateWindow("Windmill Animation");
 
     initialize();
     glutDisplayFunc(display);
     glutTimerFunc(200, doFrame, 0);
     glutMainLoop();
-
     return 0;
 }
