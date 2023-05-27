@@ -19,7 +19,7 @@ void displayPoint(int x, int y)
 }
 
 void DDALine(int x1, int y1, int x2, int y2)
-{
+{*
     float x, y, dx, dy, step, Xin ,Yin;
     dx = x2 - x1;
     dy = y2 - y1;
