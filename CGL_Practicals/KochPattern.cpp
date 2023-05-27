@@ -5,7 +5,7 @@
 #include <iostream>
 #include <math.h>
 
-#define XMAX 1400
+#define XMAX 1200
 #define YMAX 900
 #define RADIAN (3.14/180)
 
@@ -103,6 +103,8 @@ void drawKoch(float xa, float ya, float xb, float yb, int n)
     }
 }
 
+
+
 void draw()
 {
 
@@ -116,6 +118,7 @@ void draw()
     glEnd();
     glFlush();
 }
+
 
 
 int main(int argc, char **argv)
