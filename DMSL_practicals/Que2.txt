@@ -1,0 +1,164 @@
+========================================================== Question 2 (boat and sailor) =======================================================
+
+
+mysql> desc sailors;
++--------+-------------+------+-----+---------+----------------+
+| Field  | Type        | Null | Key | Default | Extra          |
++--------+-------------+------+-----+---------+----------------+
+| sid    | int(11)     | NO   | PRI | NULL    | auto_increment |
+| sname  | varchar(30) | NO   |     | NULL    |                |
+| rating | int(11)     | YES  |     | NULL    |                |
+| age    | float       | YES  |     | NULL    |                |
++--------+-------------+------+-----+---------+----------------+
+4 rows in set (0.05 sec)
+
+mysql> desc boats;
++-------+-------------+------+-----+---------+----------------+
+| Field | Type        | Null | Key | Default | Extra          |
++-------+-------------+------+-----+---------+----------------+
+| bid   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| bname | varchar(20) | NO   |     | NULL    |                |
+| color | varchar(10) | NO   |     | NULL    |                |
++-------+-------------+------+-----+---------+----------------+
+3 rows in set (0.05 sec)
+
+
+mysql> desc reserves;
++-------+---------+------+-----+---------+----------------+
+| Field | Type    | Null | Key | Default | Extra          |
++-------+---------+------+-----+---------+----------------+
+| id    | int(11) | NO   | PRI | NULL    | auto_increment |
+| sid   | int(11) | NO   | MUL | NULL    |                |
+| bid   | int(11) | NO   | MUL | NULL    |                |
+| day   | date    | NO   |     | NULL    |                |
++-------+---------+------+-----+---------+----------------+
+4 rows in set (0.05 sec)
+
+
+1) Find the names of sailors who have reserved a red or a green boat
+
+mysql> select reserves.id as "Reservation id", sailors.sname, boats.bname as "Boat", boats.color, reserves.day from reserves inner join sailors on reserves.sid = sailors.sid inner join boats on reserves.bid = boats.bid
+    -> where boats.color in("red", "green");
++----------------+-------+------+-------+------------+
+| Reservation id | sname | Boat | color | day        |
++----------------+-------+------+-------+------------+
+|              5 | Jack  | b1   | green | 2023-05-24 |
+|              6 | Rose  | b1   | green | 2023-05-24 |
+|              7 | Rose  | b1   | red   | 2023-05-24 |
+|              8 | Jack  | b1   | red   | 2023-05-24 |
++----------------+-------+------+-------+------------+
+4 rows in set (0.00 sec)
+
+2) Find the names of sailor's who have reserved both a red and a green boat
+
+mysql> select sailors.sid,  sailors.sname from sailors
+    -> inner join reserves on reserves.sid = sailors.sid
+    -> inner join boats on reserves.bid = boats.bid
+    -> where boats.color in('red', 'green')
+    -> group by sailors.sid, sailors.sname
+    -> having count(distinct boats.color) = 2;
++-----+-------+
+| sid | sname |
++-----+-------+
+|   1 | Rose  |
+|   2 | Jack  |
++-----+-------+
+2 rows in set (0.00 sec)
+
+
+c) Find the sids of all sailor's who have reserved red boats but not green boats
+
+mysql> select distinct sailors.sid, sailors.sname from sailors inner join reserves on sailors.sid = reserves.sid inner join boats on reserves.bid = boats.bid where boats.color = 'red' and sailors.sid not in(select reserves.sid from reserves inner join boats on reserves.bid = boats.bid where boats.color = 'green');
++-----+-----------+
+| sid | sname     |
++-----+-----------+
+|   3 | Voldemort |
++-----+-----------+
+1 row in set (0.00 sec)
+
+d) Find sailors whose rating is better than some sailor called Rajesh
+
+mysql> select sid as "Sailor Id", sname as "Sailor", rating, age from sailors where rating > (select rating from sailors where sname = "Rajesh");
++-----------+-----------+--------+-------+
+| Sailor Id | Sailor    | rating | age   |
++-----------+-----------+--------+-------+
+|         1 | Rose      |      8 | 30.45 |
+|         2 | Jack      |      9 | 35.45 |
+|         3 | Voldemort |     10 | 95.45 |
++-----------+-----------+--------+-------+
+3 rows in set (0.00 sec)
+
+
+e) Find the sailor's with the highest rating using ALL.
+
+
+mysql> select * from sailors where rating >= ALL(select rating from sailors);
++-----+-----------+--------+-------+
+| sid | sname     | rating | age   |
++-----+-----------+--------+-------+
+|   3 | Voldemort |     10 | 95.45 |
++-----+-----------+--------+-------+
+1 row in set (0.00 sec)
+
+
+f) Find the name and age of the oldest sailor.
+
+mysql> select sid, sname, age from sailors where age = (select max(age) from sailors);
++-----+-----------+-------+
+| sid | sname     | age   |
++-----+-----------+-------+
+|   3 | Voldemort | 95.45 |
++-----+-----------+-------+
+1 row in set (0.00 sec)
+
+5) Find the names of sailors who are older than the oldest sailor with a rating of 10.
+
+
+mysql> select sid, sname, age from sailors where age > (select max(age) from sailors where rating = 10);
++-----+---------+--------+
+| sid | sname   | age    |
++-----+---------+--------+
+|   5 | chulbul | 115.45 |
+|   6 | bulbul  | 145.45 |
++-----+---------+--------+
+2 rows in set (0.00 sec)
+
+h) Displays all the sailors according to rating (Lower Rating First), if rating is same then sort according to age (Younger First).
+
+mysql> select * from sailors order by rating asc, age asc;
++-----+-----------+--------+--------+
+| sid | sname     | rating | age    |
++-----+-----------+--------+--------+
+|   4 | Rajesh    |      5 |     34 |
+|   1 | Rose      |      8 |  30.45 |
+|   5 | chulbul   |      8 | 115.45 |
+|   6 | bulbul    |      8 | 145.45 |
+|   2 | Jack      |      9 |  35.45 |
+|   3 | Voldemort |     10 |  95.45 |
++-----+-----------+--------+--------+
+6 rows in set (0.00 sec)
+
+i) Find the age of youngest sailor with age >= 18 for each rating with at least 2 such sailors.
+
+mysql> select sname, rating, min(age) as youngest_age from sailors where age >= 18 group by rating having count(*) >= 2;
++-------+--------+--------------+
+| sname | rating | youngest_age |
++-------+--------+--------------+
+| Rose  |      8 |        30.45 |
++-------+--------+--------------+
+1 row in set (0.00 sec)
+
+j) Write a procedure to delete records from sailors table by reading SID from Keyboard
+
+mysql> delimiter &&
+mysql> create procedure deleteSailor(in sailorId int)
+    -> begin
+    -> delete from sailors where sid = sailorId;
+    -> end &&
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+
+mysql> call deleteSailor(7);
+Query OK, 1 row affected (0.01 sec)
+

@@ -6,7 +6,6 @@
 // Points.
 
 
-#include <windows.h>
 #include <GL/glut.h>
 #include <bits/stdc++.h>
 #include <iostream>
