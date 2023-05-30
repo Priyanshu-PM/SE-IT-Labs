@@ -1,0 +1,30 @@
+-- create database university
+create database university;
+
+-- use database
+use university;
+
+-- create table department
+
+create table department(dept_code int not null, dept_name varchar(20) not null, office_no varchar(10) not null, phone varchar(10) not null, college varchar(20) not null, primary key(dept_code, dept_name));
+
+-- create table course
+
+create table course(courseNumber int not null, course_name varchar(20) not null, description text not null, credits int not null, dept_code int not null, dept_name varchar(20) not null, primary key(courseNumber, dept_code), foreign key(dept_code, dept_name) references department(dept_code, dept_name));
+
+-- create table section
+
+create table section(sectionNumber int not null auto_increment, instructor varchar(20) not null, semester int not null, _year varchar(10) not null, courseNumber int not null, dept_code int not null, primary key(sectionNumber), foreign key(courseNumber, dept_code) references course(courseNumber, dept_code));
+
+-- create table student
+
+create table student(SSN int not null auto_increment, name varchar(20) not null, address varchar(20) not null, phone varchar(10) not null, birthdate date not null, dept_code int not null, dept_name varchar(20) not null, degree varchar(20) not null, primary key(SSN), foreign key(dept_code, dept_name) references department(dept_code, dept_name));
+
+-- create table grades
+
+create table grades(stud_id int not null, sectionNumber int not null, grade varchar(1) not null, foreign key(stud_id) references student(SSN), foreign key(sectionNumber) references section(sectionNumber), primary key(stud_id, sectionNumber));
+
+-- create table records
+
+create table records(record_id int not null auto_increment, SSN int not null, courseNumber int not null, dept_code int not null, dept_name varchar(20) not null, foreign key(SSN) references student(SSN), foreign key(courseNumber, dept_code) references course(courseNumber, dept_code), foreign key(dept_code, dept_name) references department(dept_code, dept_name), primary key(record_id));
+
