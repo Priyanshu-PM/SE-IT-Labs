@@ -1,0 +1,213 @@
+
+======================================================== Question 3  (library) =================================================================
+
+a) Create the tables with the appropriate integrity constraints
+
+mysql> create table student(stud_no int not null auto_increment, stud_name varchar(30) not null, primary key(stud_no));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> desc student;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| stud_no   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| stud_name | varchar(30) | NO   |     | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+2 rows in set (0.01 sec)
+
+
+
+mysql> create table membership(mem_no int not null auto_increment, stud_no int not null, primary key(mem_no), foreign key(stud_no) references student(stud_no));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc membership;
++---------+---------+------+-----+---------+----------------+
+| Field   | Type    | Null | Key | Default | Extra          |
++---------+---------+------+-----+---------+----------------+
+| mem_no  | int(11) | NO   | PRI | NULL    | auto_increment |
+| stud_no | int(11) | NO   | MUL | NULL    |                |
++---------+---------+------+-----+---------+----------------+
+2 rows in set (0.02 sec)
+
+mysql> create table book(book_no int not null auto_increment, book_name varchar(20) not null, author varchar(20) not null, primary key(book_no));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> desc book;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| book_no   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| book_name | varchar(20) | NO   |     | NULL    |                |
+| author    | varchar(20) | NO   |     | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+3 rows in set (0.01 sec)
+
+mysql> create table iss_rec(iss_no int not null auto_increment, iss_date date not null, mem_no int not null, book_no int not null, primary key(iss_no), foreign key(mem_no) references membership(mem_no), foreign key(book_no) references book(book_no));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc iss_rec;
++----------+---------+------+-----+---------+----------------+
+| Field    | Type    | Null | Key | Default | Extra          |
++----------+---------+------+-----+---------+----------------+
+| iss_no   | int(11) | NO   | PRI | NULL    | auto_increment |
+| iss_date | date    | NO   |     | NULL    |                |
+| mem_no   | int(11) | NO   | MUL | NULL    |                |
+| book_no  | int(11) | NO   | MUL | NULL    |                |
++----------+---------+------+-----+---------+----------------+
+4 rows in set (0.01 sec)
+
+
+b) Insert around 10 records in each of the tables
+
+mysql> insert into student(stud_name) values("Priyanshu"),("Shitanshu"), ("Om"),("Somesh"),("Madhav"),("Rushikesh"),("Sudarshan"),("Sairaj"),("Rajesh"),("Harsh");
+Query OK, 8 rows affected (0.00 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> insert into membership(stud_no) values(1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
+Query OK, 10 rows affected (0.00 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> insert into book(book_name, author) values("perception", "PM"), ("how we met", "PM"),("until we die", "CJDATE"),("perception", "PM"),("The reality", "APJ"),("Big bang", "Hawkins"),("safe driving", "Salman"), ("matter", "vivek"), ("problems deal", "kangana"), ("how to not die", "Gilbert");
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> insert into iss_rec(iss_date, mem_no, book_no) values("2023-05-12", 1, 3), ("2023-05-12", 1, 4),("2023-05-13", 2, 3), ("2023-06-12", 1, 4), ("2023-05-02", 5, 3),("2023-06-12", 3, 3),("2023-05-12", 5, 10), ("2023-05-12", 7, 3),("2023-05-01", 5, 6), ("2023-05-12", 1, 3);
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+c) List all the student names with their membership numbers
+
+mysql> select membership.mem_no as "Membership number", student.stud_name as "Student Name" from membership inner join student on membership.stud_no = student.stud_no;
++-------------------+--------------+
+| Membership number | Student Name |
++-------------------+--------------+
+|                 1 | Priyanshu    |
+|                 2 | Shitanshu    |
+|                 3 | Om           |
+|                 4 | Somesh       |
+|                 5 | Madhav       |
+|                 6 | Rushikesh    |
+|                 7 | Sudarshan    |
+|                 8 | Sairaj       |
+|                 9 | Rajesh       |
+|                10 | Harsh        |
++-------------------+--------------+
+10 rows in set (0.04 sec)
+
+
+d) List all the issues for the current date with student and Book names
+
+
+mysql> select iss_rec.iss_no as "Issue No", student.stud_name as "Student Name", book.book_name as "Book Name", iss_date as "Issue Date" from iss_rec inner join membership on iss_rec.mem_no = membership.mem_no inner join book on iss_rec.book_no = book.book_no inner join student on membership.stud_no = student.stud_no where iss_rec.iss_date = date(now());
++----------+--------------+----------------+------------+
+| Issue No | Student Name | Book Name      | Issue Date |
++----------+--------------+----------------+------------+
+|       11 | Priyanshu    | problems deal  | 2023-05-30 |
+|       12 | Priyanshu    | how to not die | 2023-05-30 |
++----------+--------------+----------------+------------+
+2 rows in set (0.00 sec)
+
+
+e) List the details of students who borrowed book whose author is CJDATE
+
+
+mysql> select iss_rec.iss_no as "Issue No", student.stud_name as "Student Name", book.book_name as "Book Name",book.author as "Author",  iss_date as "Issue Date" from iss_rec inner join membership on iss_rec.mem_no = membership.mem_no inner join book on iss_rec.book_no = book.book_no inner join student on membership.stud_no = student.stud_no where book.author = "CJDATE";
++----------+--------------+--------------+--------+------------+
+| Issue No | Student Name | Book Name    | Author | Issue Date |
++----------+--------------+--------------+--------+------------+
+|        1 | Priyanshu    | until we die | CJDATE | 2023-05-12 |
+|        3 | Shitanshu    | until we die | CJDATE | 2023-05-13 |
+|        5 | Madhav       | until we die | CJDATE | 2023-05-02 |
+|        6 | Om           | until we die | CJDATE | 2023-06-12 |
+|        8 | Sudarshan    | until we die | CJDATE | 2023-05-12 |
+|       10 | Priyanshu    | until we die | CJDATE | 2023-05-12 |
++----------+--------------+--------------+--------+------------+
+6 rows in set (0.00 sec)
+
+
+f) Give a count of how many books have been bought by each student
+
+mysql> select student.stud_name, count(iss_rec.book_no) as "Total Books Bought" from iss_rec inner join membership on iss_rec.mem_no = membership.mem_no inner join student on membership.stud_no = student.stud_no group by iss_rec.mem_no;
++-----------+--------------------+
+| stud_name | Total Books Bought |
++-----------+--------------------+
+| Priyanshu |                  6 |
+| Shitanshu |                  1 |
+| Om        |                  1 |
+| Madhav    |                  3 |
+| Sudarshan |                  1 |
++-----------+--------------------+
+5 rows in set (0.00 sec)
+
+
+g) Give a list of books taken by student with stud_no as 5
+
+mysql> select iss_rec.mem_no as "Member No", student.stud_name as "Student Name", book.book_name, iss_rec.iss_date from iss_rec inner join membership on iss_rec.mem_no = membership.mem_no inner join student on membership.stud_no = student.stud_no inner join book on iss_rec.book_no = book.book_no where membership.stud_no = 5;
++-----------+--------------+----------------+------------+
+| Member No | Student Name | book_name      | iss_date   |
++-----------+--------------+----------------+------------+
+|         5 | Madhav       | until we die   | 2023-05-02 |
+|         5 | Madhav       | how to not die | 2023-05-12 |
+|         5 | Madhav       | Big bang       | 2023-05-01 |
++-----------+--------------+----------------+------------+
+3 rows in set (0.00 sec)
+
+
+h) List the book details which are issued as of today
+
+mysql> select iss_rec. iss_no as "Issue No", iss_rec.book_no as "Book No", book.book_name as "Book Name", book.author as "Author", iss_rec.iss_date as "Issue Date" from iss_rec inner join book on iss_rec.book_no = book.book_no where iss_rec.iss_date < date(now());
++----------+---------+----------------+---------+------------+
+| Issue No | Book No | Book Name      | Author  | Issue Date |
++----------+---------+----------------+---------+------------+
+|        1 |       3 | until we die   | CJDATE  | 2023-05-12 |
+|        2 |       4 | perception     | PM      | 2023-05-12 |
+|        3 |       3 | until we die   | CJDATE  | 2023-05-13 |
+|        5 |       3 | until we die   | CJDATE  | 2023-05-02 |
+|        7 |      10 | how to not die | Gilbert | 2023-05-12 |
+|        8 |       3 | until we die   | CJDATE  | 2023-05-12 |
+|        9 |       6 | Big bang       | Hawkins | 2023-05-01 |
+|       10 |       3 | until we die   | CJDATE  | 2023-05-12 |
++----------+---------+----------------+---------+------------+
+8 rows in set (0.00 sec)
+
+
+i) Create a view which lists out the iss_no, iss _date, stud_name, book name
+
+mysql> create view issueDetails as select iss_rec.iss_no as "Issue No", student.stud_name as "Student Name", book.book_name as "Book Name", iss_date as "Issue Date" from iss_rec inner join membership on iss_rec.mem_no = membership.mem_no inner join book on iss_rec.book_no = book.book_no inner join student on membership.stud_no = student.stud_no;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> select * from issueDetails;
++----------+--------------+----------------+------------+
+| Issue No | Student Name | Book Name      | Issue Date |
++----------+--------------+----------------+------------+
+|        1 | Priyanshu    | until we die   | 2023-05-12 |
+|        2 | Priyanshu    | perception     | 2023-05-12 |
+|        3 | Shitanshu    | until we die   | 2023-05-13 |
+|        4 | Priyanshu    | perception     | 2023-06-12 |
+|        5 | Madhav       | until we die   | 2023-05-02 |
+|        6 | Om           | until we die   | 2023-06-12 |
+|        7 | Madhav       | how to not die | 2023-05-12 |
+|        8 | Sudarshan    | until we die   | 2023-05-12 |
+|        9 | Madhav       | Big bang       | 2023-05-01 |
+|       10 | Priyanshu    | until we die   | 2023-05-12 |
+|       11 | Priyanshu    | problems deal  | 2023-05-30 |
+|       12 | Priyanshu    | how to not die | 2023-05-30 |
++----------+--------------+----------------+------------+
+12 rows in set (0.00 sec)
+
+
+j) Create a view which lists the daily issues-date wise for the last one week
+
+
+mysql> create view issueList as select iss_rec.iss_no as "Issue No", student.stud_name as "Student Name", book.book_name as "Book Name", iss_date as "Issue Date" from iss_rec inner join membership on iss_rec.mem_no = membership.mem_no inner join book on iss_rec.book_no = book.book_no inner join student on membership.stud_no = student.stud_no where iss_date >= (curdate() - interval 1 week) and iss_date <= curdate() order by iss_date;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> select * from issueList;
++----------+--------------+----------------+------------+
+| Issue No | Student Name | Book Name      | Issue Date |
++----------+--------------+----------------+------------+
+|       11 | Priyanshu    | problems deal  | 2023-05-30 |
+|       12 | Priyanshu    | how to not die | 2023-05-30 |
++----------+--------------+----------------+------------+
+2 rows in set (0.00 sec)
