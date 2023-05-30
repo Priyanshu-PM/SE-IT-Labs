@@ -28,3 +28,43 @@ create table grades(stud_id int not null, sectionNumber int not null, grade varc
 
 create table records(record_id int not null auto_increment, SSN int not null, courseNumber int not null, dept_code int not null, dept_name varchar(20) not null, foreign key(SSN) references student(SSN), foreign key(courseNumber, dept_code) references course(courseNumber, dept_code), foreign key(dept_code, dept_name) references department(dept_code, dept_name), primary key(record_id));
 
+
+-- insert queries
+
+desc department;
+
+-- insert queries
+
+insert into department(dept_code, dept_name, office_no, phone, college) values(1, "IT", 23, "9876543210", "PICT"), (2, "CSE", 24, "9876543210", "PICT"), (3, "ENTC", 25, "9876543789", "PICT");
+
+desc course;
+
+insert into course(courseNumber, course_name, description, credits, dept_code, dept_name) values(1, "DBMS", "Database Management System", 3, 1, "IT"), (2, "MP", "Microprocessor", 3, 2, "CSE"), (3, "CG", "Computer Graphics", 3, 1, "IT"); 
+
+
+-- to be done
+desc student;
+
+insert into student(name , address, phone, birthdate, dept_code, dept_name, degree) values("Priyanshu", "Pune", "9786534210"
+
+
+
+======================================================== queries ==================================================
+
+1)  List name of all students who have registered for courses in more than one department.
+
+mysql> select student.SSN as "Roll No", student.name as "Student Name", student.address as "Address" from student inner join records on student.SSN = records.SSN having count(distinct records.dept_code ) > 1;
++---------+--------------+---------+
+| Roll No | Student Name | Address |
++---------+--------------+---------+
+|       3 | Priyanshu    | Pune    |
++---------+--------------+---------+
+1 row in set (0.00 sec)
+
+
+
+2) List name and SSN of all students who have registered for more than one course in a specified department.
+
+
+
+
