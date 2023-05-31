@@ -1,0 +1,207 @@
+==================================================== dukandaar database ==================================================
+
+mysql> create table shops(shopid int primary key, name varchar(20) not null, address varchar(20) not null);
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> create table items(itemid varchar(20) not null primary key, name varchar(20) not null, description varchar(20) not null);
+Query OK, 0 rows affected (0.05 sec)
+
+
+b) Create the table Sells. Invent suitable types for the attributes (itemId shall have the type char(10)) and indicate reasonable integrity constraints.
+
+mysql> create table sells(shopid int not null, itemid varchar(20) not null, price int not null, foreign key(shopid) references shops(shopid), foreign key(itemid) references items(itemid));
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> create table customers(cusid int not null auto_increment primary key, name varchar(20) not null, address varchar(20) not null);
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> create table sales(saleid int not null auto_increment, cusid int not null, itemid varchar(20) not null, shopid int not null, pur_date date not null, primary key(saleid), foreign key(cusid) references customers(cusid), foreign key(itemid) references items(itemid), foreign key(shopid) references shops(shopid));
+Query OK, 0 rows affected (0.06 sec)
+
+
+================================================== insert queries =================================================
+
+
+mysql> insert into shops(shopid, name, address) values
+    -> (1, 'Shop A', '123 Main St'),
+    -> (2, 'Shop B', '456 Elm St'),
+    -> (3, 'Shop C', '789 Oak St'),
+    -> (4, 'Shop D', '342 perterson St'),
+    -> (5, 'Shop E', '892 sourth-west St'),
+    -> (6, 'Shop F', '782 west St');
+Query OK, 6 rows affected (0.04 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> insert into items(itemid, name, description) values
+    -> ("EF123-A", 'Item A', 'desc 1'),
+    -> ("EF123-B", 'Item B', 'Desc B'),
+    -> ("EF123-C", 'Item C', 'desc C'),
+    -> ("EF123-D", 'Item D', 'desc D'),
+    -> ("EF123-E", 'Item E', 'desc E'),
+    -> ("EF123-F", 'Item F', 'desc F');
+Query OK, 6 rows affected (0.05 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> insert into sells values
+    ->(1, "EF123-A", 11), (6, "EF123-B", 20), (2, "EF123-A", 10), (5, "EF123-E", 20), (3, "EF123-E", 21), (4, "EF123-G", 81);
+Query OK, 6 rows affected (0.04 sec)
+
+mysql> insert into customers(name, address) values
+    -> ("A", "add1"),
+    -> ("B", "add2"),
+    -> ("C", "add3"),
+    -> ("D", "add4");
+Query OK, 4 rows affected (0.04 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> insert into sales(cusid, itemid, shopid, pur_date) values
+    -> (1, "EF123-A", 1, '2023-01-01'),
+    -> (2, "EF123-B", 2, '2023-01-01'),
+    -> (3, "EF123-C", 3, '2023-01-01');
+Query OK, 3 rows affected (0.04 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+============================================= queries =================================================
+
+
+c) Print the name and address of all customers who haven’t bought any item.
+
+mysql> select c.cusid, c.name, c.address from customers c
+    -> left join sales s on s.cusid = c.cusid
+    -> where s.cusid is null;
++-------+------+---------+
+| cusid | name | address |
++-------+------+---------+
+|     4 | D    | add4    |
++-------+------+---------+
+1 row in set (0.04 sec)
+
+
+d) Print the number of shops that sell items with id’s starting with 'EF'.
+
+mysql> select i.name, count(sh.shopid) as "no of shops" from sells s
+    -> inner join shops sh on sh.shopid = s.shopid
+    -> inner join items i on i.itemid = s.itemid
+    -> where i.itemid like "EF%"
+    -> group by i.name;
++--------+-------------+
+| name   | no of shops |
++--------+-------------+
+| Item A |           2 |
+| Item B |           1 |
+| Item E |           2 |
+| Item G |           1 |
++--------+-------------+
+4 rows in set (0.00 sec)
+
+
+e) Print the name and address of the shop(s) that sell the item with id = 'EF123-A' at the lowest price.
+
+mysql> select sh.name as "shop", sh.address, s.price
+    -> from shops sh
+    -> inner join sells s on s.shopid = sh.shopid
+    -> where s.itemid = "EF123-A" and s.price = (select min(price) from sells where itemid = "EF123-A");
++--------+------------+-------+
+| shop   | address    | price |
++--------+------------+-------+
+| Shop B | 456 Elm St |    10 |
++--------+------------+-------+
+1 row in set (0.00 sec)
+
+
+f) For all customers that have bought at least one item: print the customer id and the total sum of all purchases.
+
+mysql> select c.cusid, c.name, sum(s.price) as "total purchase" from customers c
+    -> inner join sales on c.cusid = sales.cusid
+    -> inner join sells s on s.itemid = sales.itemid
+    -> inner join shops sh on sh.shopid = sales.shopid
+    -> inner join shops on shops.shopid = s.shopid
+    -> group by sales.cusid;
++-------+------+----------------+
+| cusid | name | total purchase |
++-------+------+----------------+
+|     1 | A    |             21 |
+|     2 | B    |             20 |
++-------+------+----------------+
+2 rows in set (0.04 sec)
+
+
+g) Display total price per customer.
+
+mysql> select c.cusid, c.name, sum(s.price) as "total price" from customers c
+    -> inner join sales on c.cusid = sales.cusid
+    -> inner join sells s on s.itemid = sales.itemid
+    -> inner join shops sh on sh.shopid = sales.shopid
+    -> inner join shops on shops.shopid = s.shopid
+    -> group by sales.cusid;
++-------+------+-------------+
+| cusid | name | total price |
++-------+------+-------------+
+|     1 | A    |          21 |
+|     2 | B    |          20 |
++-------+------+-------------+
+2 rows in set (0.00 sec)
+
+
+h) Display the name of Highest buyer.
+
+mysql> select c.name, sum(s.price) as "max purchase" from customers c
+    -> inner join sales sa on sa.cusid = c.cusid
+    -> inner join shops sh on sh.shopid = sa.shopid
+    -> inner join sells s on s.shopid = sa.shopid
+    -> group by sa.cusid
+    -> order by sum(s.price) desc limit 1;
++------+--------------+
+| name | max purchase |
++------+--------------+
+| C    |           21 |
++------+--------------+
+1 row in set (0.00 sec)
+
+
+i) Write a procedure to display total items per customer.
+
+mysql> delimiter &&
+mysql> create procedure totalitems()
+    -> begin
+    -> select c.name, count(sa.itemid) as "total items" from customers c
+    -> inner join sales sa on sa.cusid = c.cusid
+    -> group by c.cusid;
+    -> end &&
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> delimiter ;
+mysql> call totalitems();
++------+-------------+
+| name | total items |
++------+-------------+
+| A    |           1 |
+| B    |           1 |
+| C    |           1 |
++------+-------------+
+3 rows in set (0.04 sec)
+
+Query OK, 0 rows affected (0.05 sec)
+
+
+j) Write a trigger to delete item, corresponding tables must have reflected according.
+
+
+mysql> insert into items values(0, "removed", "deleted item");
+Query OK, 1 row affected (0.04 sec)
+
+============================== trigger ======================================
+
+mysql> delimiter &&
+mysql> create trigger deleteitem
+    -> before delete on items for each row
+    -> begin
+    -> update sells set itemid = 0 where itemid = old.itemid;
+    -> update sales set itemid = 0 where itemid = old.itemid;
+    -> end &&
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+
+=============================================================================
+
