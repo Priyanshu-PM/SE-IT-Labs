@@ -1,0 +1,140 @@
+=================================================================== Bank Database ===============================================================
+
+mysql> create database bank;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> use bank;
+Database changed
+mysql> create table customer(cusid int not null auto_increment, name varchar(20) not null, address varchar(20) not null, age int not null, contact varchar(10) not null, email varchar(20) not null, primary key(cusid));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> desc customer;
++---------+-------------+------+-----+---------+----------------+
+| Field   | Type        | Null | Key | Default | Extra          |
++---------+-------------+------+-----+---------+----------------+
+| cusid   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name    | varchar(20) | NO   |     | NULL    |                |
+| address | varchar(20) | NO   |     | NULL    |                |
+| age     | int(11)     | NO   |     | NULL    |                |
+| contact | varchar(10) | NO   |     | NULL    |                |
+| email   | varchar(20) | NO   |     | NULL    |                |
++---------+-------------+------+-----+---------+----------------+
+6 rows in set (0.05 sec)
+
+mysql> create table accounttype(id int not null auto_increment, acc_name varchar(10) not null, primary key(id));
+Query OK, 0 rows affected (0.03 sec)
+mysql> select * from accounttype;
++----+----------+
+| id | acc_name |
++----+----------+
+|  1 | fixed    |
+|  2 | savings  |
+|  3 | monthly  |
++----+----------+
+3 rows in set (0.00 sec)
+
+mysql> create table account(accno int not null auto_increment, acctype int not null, cusid int not null, created date not null, balance float not null default 0, primary key(accno), foreign key(cusid) references customer(cusid), foreign key(acctype)  references accounttype(id));
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> desc account;
++---------+---------+------+-----+---------+----------------+
+| Field   | Type    | Null | Key | Default | Extra          |
++---------+---------+------+-----+---------+----------------+
+| accno   | int(11) | NO   | PRI | NULL    | auto_increment |
+| acctype | int(11) | NO   | MUL | NULL    |                |
+| cusid   | int(11) | NO   | MUL | NULL    |                |
+| created | date    | NO   |     | NULL    |                |
+| balance | float   | NO   |     | 0       |                |
++---------+---------+------+-----+---------+----------------+
+5 rows in set (0.05 sec)
+
+mysql> create table transaction(tid int not null auto_increment, accno int not null, deposit int default 0, withdraw int default 0, tdate date not null, primary key(tid), foreign key(accno) references account(accno));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> desc transaction;
++----------+---------+------+-----+---------+----------------+
+| Field    | Type    | Null | Key | Default | Extra          |
++----------+---------+------+-----+---------+----------------+
+| tid      | int(11) | NO   | PRI | NULL    | auto_increment |
+| accno    | int(11) | NO   | MUL | NULL    |                |
+| deposit  | int(11) | YES  |     | 0       |                |
+| withdraw | int(11) | YES  |     | 0       |                |
+| tdate    | date    | NO   |     | NULL    |                |
++----------+---------+------+-----+---------+----------------+
+5 rows in set (0.01 sec)
+
+mysql> create table loan(loanid int not null auto_increment, accno int not null, loandate date not null, amount float not null, primary key(loanid), foreign key(accno) references account(accno));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> desc loan;
++----------+---------+------+-----+---------+----------------+
+| Field    | Type    | Null | Key | Default | Extra          |
++----------+---------+------+-----+---------+----------------+
+| loanid   | int(11) | NO   | PRI | NULL    | auto_increment |
+| accno    | int(11) | NO   | MUL | NULL    |                |
+| loandate | date    | NO   |     | NULL    |                |
+| amount   | float   | NO   |     | NULL    |                |
++----------+---------+------+-----+---------+----------------+
+4 rows in set (0.12 sec)
+
+
+=========================================== insert queries ========================================
+
+
+mysql> select * from customer;
++-------+-----------+---------+-----+------------+---------------+
+| cusid | name      | address | age | contact    | email         |
++-------+-----------+---------+-----+------------+---------------+
+|     1 | priyanshu | pune    |  20 | 9876543210 | abc@gmail.com |
+|     2 | pranay    | nagpur  |  21 | 0123456789 | def@gmail.com |
+|     3 | rajesh    | goa     |  21 | 1234509876 | ghi@gmail.com |
+|     4 | suresh    | panvel  |  25 | 1098761234 | xyz@gmail.com |
++-------+-----------+---------+-----+------------+---------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from account;
++-------+---------+-------+------------+---------+
+| accno | acctype | cusid | created    | balance |
++-------+---------+-------+------------+---------+
+|     1 |       1 |     1 | 2023-05-31 |  150000 |
+|     2 |       2 |     2 | 2023-05-31 |  150000 |
+|     3 |       1 |     2 | 2023-05-31 |  150000 |
+|     5 |       1 |     3 | 2023-05-31 |  150000 |
+|     6 |       2 |     1 | 2023-05-31 |  150000 |
+|     7 |       3 |     1 | 2023-05-31 |  150000 |
+|     8 |       1 |     1 | 2008-02-21 |   85000 |
+|     9 |       1 |     3 | 2008-03-25 |   65000 |
++-------+---------+-------+------------+---------+
+8 rows in set (0.00 sec)
+
+
+mysql> select * from transaction;
++-----+-------+---------+----------+------------+
+| tid | accno | deposit | withdraw | tdate      |
++-----+-------+---------+----------+------------+
+|   1 |     7 |   60000 |        0 | 2008-08-28 |
+|   2 |     8 |    5500 |        0 | 2008-08-28 |
+|   3 |     9 |   15000 |        0 | 2008-08-28 |
+|   4 |     9 |   15000 |        0 | 2010-08-28 |
+|   5 |     9 |   15000 |        0 | 2023-08-28 |
+|   6 |     9 |   15000 |        0 | 2022-08-28 |
+|   7 |     1 |   15000 |        0 | 2022-08-28 |
+|   8 |     2 |    2500 |        0 | 2022-08-28 |
+|   9 |     2 |       0 |    15000 | 2022-08-28 |
+|  10 |     3 |       0 |    15000 | 2023-08-28 |
+|  11 |     8 |       0 |    15000 | 2008-08-28 |
++-----+-------+---------+----------+------------+
+11 rows in set (0.00 sec)
+
+mysql> select * from loan;
++--------+-------+------------+--------+
+| loanid | accno | loandate   | amount |
++--------+-------+------------+--------+
+|      1 |     1 | 2023-05-31 |   6000 |
+|      2 |     2 | 2023-05-31 |   5000 |
+|      3 |     6 | 2023-05-31 |   8000 |
++--------+-------+------------+--------+
+3 rows in set (0.00 sec)
+
+
+
