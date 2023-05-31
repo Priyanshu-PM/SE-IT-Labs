@@ -1,0 +1,171 @@
+================================================== dailylabor database ==================================================
+
+
+mysql> CREATE TABLE WORKER (
+    ->   worker_id INT,
+    ->   name VARCHAR(50) NOT NULL,
+    ->   wage_per_hour DECIMAL(10, 2) CHECK (wage_per_hour >= 0),
+    ->   specialized_in VARCHAR(50),
+    ->   manager_id INT,
+    ->   PRIMARY KEY (worker_id),
+    ->   FOREIGN KEY (manager_id) REFERENCES WORKER(worker_id)
+    -> );
+Query OK, 0 rows affected (0.10 sec)
+
+
+mysql> CREATE TABLE JOB (
+    ->   job_id INT,
+    ->   type_of_job VARCHAR(50),
+    ->   status VARCHAR(50),
+    ->   PRIMARY KEY (job_id)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+
+mysql> CREATE TABLE JOB_ASSIGNED (
+    ->   worker_id INT,
+    ->   job_id INT,
+    ->   starting_date DATE,
+    ->   number_of_days INT,
+    ->   FOREIGN KEY (worker_id) REFERENCES WORKER(worker_id),
+    ->   FOREIGN KEY (job_id) REFERENCES JOB(job_id)
+    -> );
+Query OK, 0 rows affected (0.09 sec)
+
+===================================================== insert queries ==============================================================
+
+mysql> INSERT INTO WORKER (worker_id, name, wage_per_hour, specialized_in, manager_id)
+    -> VALUES
+    ->   (1, 'John Doe', 15.50, 'Carpentry', NULL),
+    ->   (2, 'Jane Smith', 18.75, 'Plumbing', NULL),
+    ->   (3, 'Michael Johnson', 20.00, 'Electrical', NULL),
+    ->   (4, 'Sarah Wilson', 16.25, 'Painting', NULL),
+    ->   (5, 'David Thompson', 22.50, 'HVAC', NULL);
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO JOB (job_id, type_of_job, status)
+    -> VALUES
+    ->   (1, 'Renovation', 'In Progress'),
+    ->   (2, 'Maintenance', 'Completed'),
+    ->   (3, 'Installation', 'In Progress'),
+    ->   (4, 'Repair', 'Pending'),
+    ->   (5, 'Inspection', 'Completed');
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO JOB_ASSIGNED (worker_id, job_id, starting_date, number_of_days)
+    -> VALUES
+    ->   (1, 1, '2023-05-01', 5),
+    ->   (2, 2, '2023-05-03', 3),
+    ->   (3, 1, '2023-05-05', 7),
+    ->   (4, 3, '2023-05-07', 4),
+    ->   (5, 2, '2023-05-09', 2);
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+
+============================================ queries ==================================================
+
+
+1) Display the date on which each worker is going to end his presently assigned job.
+
+mysql> select WORKER.name, JOB_ASSIGNED.starting_date as "starting date", (JOB_ASSIGNED.starting_date + interval JOB_ASSIGNED.number_of_days day) as "ending date" from JOB_ASSIGNED
+    -> inner join WORKER on JOB_ASSIGNED.worker_id = WORKER.worker_id;
++-----------------+---------------+-------------+
+| name            | starting date | ending date |
++-----------------+---------------+-------------+
+| John Doe        | 2023-05-01    | 2023-05-06  |
+| Jane Smith      | 2023-05-03    | 2023-05-06  |
+| Michael Johnson | 2023-05-05    | 2023-05-12  |
+| Sarah Wilson    | 2023-05-07    | 2023-05-11  |
+| David Thompson  | 2023-05-09    | 2023-05-11  |
++-----------------+---------------+-------------+
+5 rows in set (0.02 sec)
+
+
+2) Display how many days remain for each worker to finish his job.
+
+mysql> SELECT w.worker_id, w.name, ja.starting_date, ja.number_of_days,
+    ->        DATEDIFF(DATE_ADD(ja.starting_date, INTERVAL ja.number_of_days DAY), CURDATE()) AS days_remaining
+    -> FROM WORKER w
+    -> JOIN JOB_ASSIGNED ja ON w.worker_id = ja.worker_id;
++-----------+-----------------+---------------+----------------+----------------+
+| worker_id | name            | starting_date | number_of_days | days_remaining |
++-----------+-----------------+---------------+----------------+----------------+
+|         1 | John Doe        | 2023-05-01    |              5 |            -26 |
+|         2 | Jane Smith      | 2023-05-03    |              3 |            -26 |
+|         3 | Michael Johnson | 2023-05-05    |              7 |            -20 |
+|         4 | Sarah Wilson    | 2023-05-07    |              4 |            -21 |
+|         5 | David Thompson  | 2023-05-09    |              2 |            -21 |
++-----------+-----------------+---------------+----------------+----------------+
+5 rows in set (0.00 sec)
+
+
+3) Display the STARTING_DATE in the following format - 'The fifth day of month of October, 2004'.
+
+mysql> select concat("the ", day(ja.starting_date), " day of the month of ",monthname(ja.starting_date), ", ", year(ja.starting_date)) as "formatted string date" from job_assigned ja;
++-------------------------------------+
+| formatted string date               |
++-------------------------------------+
+| the 1 day of the month of May, 2023 |
+| the 3 day of the month of May, 2023 |
+| the 5 day of the month of May, 2023 |
+| the 7 day of the month of May, 2023 |
+| the 9 day of the month of May, 2023 |
++-------------------------------------+
+5 rows in set (0.00 sec)
+
+
+4) Change the status to 'Complete' for all those jobs, which started in year 2008.
+
+mysql> update job
+    -> inner join job_assigned ja on ja.job_id = job.job_id
+    -> set job.status = "Completed"
+    -> where year(ja.starting_date) = "2008";
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+
+5) What is total number of days allocated for printing on the goods for all the workers together.
+
+mysql> SELECT SUM(number_of_days) AS total_days_allocated
+    -> FROM JOB_ASSIGNED;
++----------------------+
+| total_days_allocated |
++----------------------+
+|                   21 |
++----------------------+
+1 row in set (0.00 sec)
+
+
+6) Which workers receive higher than average wage per hour.
+
+mysql> select * from worker where wage_per_hour > (select avg(wage_per_hour) from worker);
++-----------+-----------------+---------------+----------------+------------+
+| worker_id | name            | wage_per_hour | specialized_in | manager_id |
++-----------+-----------------+---------------+----------------+------------+
+|         2 | Jane Smith      |         18.75 | Plumbing       |       NULL |
+|         3 | Michael Johnson |         20.00 | Electrical     |       NULL |
+|         5 | David Thompson  |         22.50 | HVAC           |       NULL |
++-----------+-----------------+---------------+----------------+------------+
+3 rows in set (0.00 sec)
+
+
+7) Display details of workers who are working on more than one job.
+
+mysql> SELECT w.worker_id, w.name, COUNT(ja.job_id) AS num_jobs
+    -> FROM WORKER w
+    -> JOIN JOB_ASSIGNED ja ON w.worker_id = ja.worker_id
+    -> GROUP BY w.worker_id, w.name
+    -> HAVING COUNT(ja.job_id) > 1;
+Empty set (0.00 sec)
+
+
+8) Which workers having specialization in polishing start their job in September?
+
+
+
+
