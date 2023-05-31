@@ -1,0 +1,289 @@
+======================================================= employees =========================================================
+
+mysql> create table employee(empid int not null auto_increment, empname varchar(20) not null, salary real not null, primary key(empid));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> create table department(deptid int not null auto_increment, deptname varchar(20) not null, managerid int not null, floornum int not null, primary key(deptid));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql>
+mysql> create table works(wid int not null auto_increment, empid int not null, deptid int not null, primary key(wid), foreign key(empid) references employee(empid), foreign key(deptid) references department(deptid));
+Query OK, 0 rows affected (0.03 sec)
+
+
+mysql> select * from employee;
++-------+-----------+---------+
+| empid | empname   | salary  |
++-------+-----------+---------+
+|     1 | Priyanshu | 1000000 |
+|     2 | Pranay    |  500000 |
+|     3 | Priya     | 1100000 |
+|     4 | Riya      |  400000 |
+|     5 | anshu     | 6000000 |
+|     6 | Sudarshan | 1000000 |
+|     7 | Somesh    |  750000 |
+|     8 | Madhav    |   50000 |
+|     9 | Rushi     |  45000  |
+|    10 | Viraj     | 5700000 |
++-------+-----------+---------+
+10 rows in set (0.00 sec)
+
+
+1) Print the names of all employees who work on the 10th floor and make less than Rs. 50,000.
+
+mysql> select e.empname, e.salary, d.deptname, d.floornum from works
+    -> inner join department d on d.deptid = works.deptid
+    -> inner join employee e on e.empid = works.empid
+    -> where d.floornum = 10 and e.salary < 50000;
++---------+--------+--------------+----------+
+| empname | salary | deptname     | floornum |
++---------+--------+--------------+----------+
+| Rushi   |  45000 | toy          |       10 |
+| Rushi   |  45000 | Developement |       10 |
++---------+--------+--------------+----------+
+2 rows in set (0.00 sec)
+
+
+2) Print the names of all managers who manage three or more departments on the same floor.
+
+mysql> select e.empid as "manager id", e.empname, count(distinct d.deptid) as "total departments" from employee e
+    -> inner join department d on d.managerid = e.empid
+    -> where d.floornum in (
+    -> select floornum from department group by floornum having count(distinct deptid) >=3)
+    -> group by e.empname, e.empid
+    -> having count(distinct d.deptid) >= 3;
++------------+-----------+-------------------+
+| manager id | empname   | total departments |
++------------+-----------+-------------------+
+|          1 | Priyanshu |                 6 |
++------------+-----------+-------------------+
+1 row in set (0.00 sec)
+
+
+3) Write a procedure to Give every employee who works in the toy department a 10 percent raise.
+
+mysql> delimiter &&
+mysql> create procedure giveraise()
+    -> begin
+    ->  update employee e
+    ->  inner join works w on w.empid = e.empid
+    ->  inner join department d on w.deptid = d.deptid
+    ->  set e.salary = e.salary *1.1
+    -> where d.deptname = "toy";
+    -> end &&
+Query OK, 0 rows affected (0.01 sec)
+
+
+mysql> call giveraise();
+Query OK, 5 rows affected (0.01 sec)
+
+mysql> select * from employee;
++-------+------------+-------------------+
+| empid | empname    | salary            |
++-------+------------+-------------------+
+|     1 | Priyanshu  |           1100000 |
+|     2 | Pranay     |            550000 |
+|     3 | Priya      |           1210000 |
+|     4 | Riya       |            400000 |
+|     5 | anshu      |           6000000 |
+|     6 | Sudarshan  |           1000000 |
+|     7 | Somesh     |            750000 |
+|     8 | Madhav     |             50000 |
+|     9 | Rushi      | 49500.00000000001 |
+|    10 | Viraj      |           5700000 |
+|    11 | Amar Arora |             44000 |
+|    12 | Abhishek   |             10000 |
+|    13 | Abhijeet   |              9000 |
++-------+------------+-------------------+
+13 rows in set (0.00 sec)
+
+
+4) Print the names and salaries of employees who work in both the toy department and the Music department.
+
+mysql> select e.empname as "employee name", e.salary from employee e
+    -> inner join works w on w.empid = e.empid
+    -> inner join department d on w.deptid = d.deptid
+    -> where d.deptname in("toy", "Music")
+    -> group by e.empname, e.salary
+    -> having count(distinct d.deptname) = 2;
++---------------+-------------------+
+| employee name | salary            |
++---------------+-------------------+
+| Amar Arora    |             44000 |
+| Priya         |           1210000 |
+| Rushi         | 49500.00000000001 |
++---------------+-------------------+
+3 rows in set (0.00 sec)
+
+
+5) Print the names of employees who earn a salary that is either less than Rs. 10,000 or more than Rs. 100,000.
+
+mysql> select empname, salary from employee where salary > 100000 or salary < 10000 order by salary asc;
++-----------+---------+
+| empname   | salary  |
++-----------+---------+
+| Abhijeet  |    9000 |
+| Riya      |  400000 |
+| Pranay    |  550000 |
+| Somesh    |  750000 |
+| Sudarshan | 1000000 |
+| Priyanshu | 1100000 |
+| Priya     | 1210000 |
+| Viraj     | 5700000 |
+| anshu     | 6000000 |
++-----------+---------+
+9 rows in set (0.00 sec)
+
+
+6) Print all of the attributes for employees who work in some department that employee Abhishek also works in.
+
+mysql> select e.*, w.deptid, d.deptname from employee e
+    -> inner join works w on w.empid = e.empid
+    -> inner join department d on d.deptid = w.deptid
+    -> where w.deptid = (
+    ->  select w.deptid from works w
+    ->  inner join employee e on e.empid = w.empid
+    ->  where e.empname = "Abhishek");
++-------+------------+-------------------+--------+----------+
+| empid | empname    | salary            | deptid | deptname |
++-------+------------+-------------------+--------+----------+
+|     3 | Priya      |           1210000 |      1 | Music    |
+|    12 | Abhishek   |             10000 |      1 | Music    |
+|    13 | Abhijeet   |              9000 |      1 | Music    |
+|    11 | Amar Arora |             44000 |      1 | Music    |
+|     9 | Rushi      | 49500.00000000001 |      1 | Music    |
++-------+------------+-------------------+--------+----------+
+5 rows in set (0.00 sec)
+
+
+7) Print the names of employees who make more than Rs. 20,000 and work in either the video department or the toy department.
+
+mysql> select e.empname, e.salary, d.deptname from employee e
+    -> inner join works w on w.empid = e.empid
+    -> inner join department d on d.deptid = w.deptid
+    -> where d.deptname in("video", "toy") and e.salary > 20000;
++------------+-------------------+----------+
+| empname    | salary            | deptname |
++------------+-------------------+----------+
+| Priyanshu  |           1100000 | toy      |
+| Pranay     |            550000 | toy      |
+| Priya      |           1210000 | toy      |
+| Amar Arora |             44000 | toy      |
+| Rushi      | 49500.00000000001 | toy      |
+| Rushi      | 49500.00000000001 | toy      |
++------------+-------------------+----------+
+6 rows in set (0.01 sec)
+
+
+8) Print the name of each employee who earns more than the manager of the department that he or she works in.
+
+mysql> select e.empname, e.salary, d.deptname from employee e
+    ->  inner join works w on w.empid = e.empid
+    ->  inner join department d on d.deptid = w.deptid
+    ->  where e.salary > (
+    ->  select m.salary from employee m
+    ->  inner join department d2 on d2.managerid = m.empid
+    ->  where d2.deptid = w.deptid);
++---------+---------+----------+
+| empname | salary  | deptname |
++---------+---------+----------+
+| Priya   | 1210000 | toy      |
+| Priya   | 1210000 | Music    |
++---------+---------+----------+
+2 rows in set (0.00 sec)
+
+
+10) Write a Procedure to Print the names of all employees who work on the floor(s) where Amar Arora works.
+
+mysql> delimiter &&
+mysql> create procedure amar_floor_emp()
+    -> begin
+    ->  declare amar_floors varchar(255);
+    ->  set amar_floors = (
+    ->          select group_concat(distinct d.floornum) from department d
+    ->          inner join works w on d.deptid = w.deptid
+    ->          inner join employee e on e.empid = w.empid
+    ->          where e.empname = "Amar Arora");
+    ->  select e2.empname, d2.deptname, d2.floornum from employee e2
+    ->  inner join works w2 on w2.empid = e2.empid
+    ->  inner join department d2 on d2.deptid = w2.deptid
+    ->  where d2.floornum in(select floornum from department where floornum in (amar_floors));
+    -> end &&
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+mysql> call amar_floor_emp();
++------------+----------+----------+
+| empname    | deptname | floornum |
++------------+----------+----------+
+| Priyanshu  | toy      |        2 |
+| Pranay     | toy      |        2 |
+| Priya      | toy      |        2 |
+| Priya      | Music    |        2 |
+| Abhishek   | Music    |        2 |
+| Abhijeet   | Music    |        2 |
+| Amar Arora | Music    |        2 |
+| Amar Arora | toy      |        2 |
+| Rushi      | toy      |        2 |
+| Rushi      | Music    |        2 |
++------------+----------+----------+
+10 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+
+11) Write a trigger to update department id from department, corresponding table must be reflected accordingly.
+
+mysql> delimiter &&
+mysql> create trigger update_deptid
+    -> after update on department for each row
+    -> begin
+    ->  if(old.deptid <> new.deptid) then
+    ->  update works set deptid = new.deptid
+    ->  where deptid = old.deptid;
+    -> end if;
+    -> end &&
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+
+
+mysql> select * from department;
++--------+--------------+-----------+----------+
+| deptid | deptname     | managerid | floornum |
++--------+--------------+-----------+----------+
+|      1 | Music        |         1 |        2 |
+|      2 | toy          |         1 |        2 |
+|      3 | toy          |         4 |       10 |
+|      4 | Developement |         1 |       10 |
+|      5 | Marketing    |         1 |       10 |
+|      6 | Video        |         2 |       10 |
+|      7 | Content      |         1 |       10 |
+|      8 | Distribution |         1 |       10 |
+|      9 | Sales        |         1 |       10 |
+|     10 | Analytics    |         1 |       10 |
++--------+--------------+-----------+----------+
+10 rows in set (0.00 sec)
+
+mysql> update department set deptid = 11 where deptname = "Analytics";
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from department;
++--------+--------------+-----------+----------+
+| deptid | deptname     | managerid | floornum |
++--------+--------------+-----------+----------+
+|      1 | Music        |         1 |        2 |
+|      2 | toy          |         1 |        2 |
+|      3 | toy          |         4 |       10 |
+|      4 | Developement |         1 |       10 |
+|      5 | Marketing    |         1 |       10 |
+|      6 | Video        |         2 |       10 |
+|      7 | Content      |         1 |       10 |
+|      8 | Distribution |         1 |       10 |
+|      9 | Sales        |         1 |       10 |
+|     11 | Analytics    |         1 |       10 |
++--------+--------------+-----------+----------+
+10 rows in set (0.00 sec)
+
+
