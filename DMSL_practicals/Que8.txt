@@ -134,7 +134,8 @@ mysql> select sal as "Third Maximum Salary" from emp where sal < (select max(sal
 1 row in set (0.00 sec)
 
 
-10)Display all the managers & clerk who work in Accounting and Marketing (SALES) departments.
+10) Display all the managers & clerk who work in Accounting and Marketing (SALES) departments.
+11) Display all the managers & clerks who work in Accounts and Marketing departments.
 
 mysql> select emp.*, dept.deptname from emp
     -> inner join dept on dept.deptno = emp.deptno
@@ -150,6 +151,81 @@ mysql> select emp.*, dept.deptname from emp
 4 rows in set (0.00 sec)
 
 
+12)Display all the employees who have joined before their managers.
+
+mysql> select e.* from emp e where hiredate < (select e2.hiredate from emp e2 where e2.empno = e.mgr);
++-------+-------+----------+------+------------+------+------+--------+
+| empno | ename | job      | mgr  | hiredate   | sal  | comm | deptno |
++-------+-------+----------+------+------------+------+------+--------+
+|  7369 | SMITH | CLERK    | 7902 | 1980-12-17 |  800 | NULL |     20 |
+|  7499 | ALLEN | SALESMAN | 7698 | 1981-02-20 | 1600 |  300 |     30 |
+|  7521 | WARD  | SALESMAN | 7698 | 1981-02-22 | 1250 |  500 |     30 |
+|  7566 | JONES | MANAGER  | 7839 | 1981-04-02 | 2975 | NULL |     20 |
+|  7698 | BLAKE | MANAGER  | 7839 | 1981-05-01 | 2850 | NULL |     30 |
+|  7782 | CLARK | MANAGER  | 7839 | 1981-06-09 | 2450 | NULL |     10 |
++-------+-------+----------+------+------------+------+------+--------+
+6 rows in set (0.00 sec)
+
+
+13) Select all the employees name along with their manager names, and if an employee does not have a manager, display him as “CEO”.
+
+mysql> select e1.ename as "employee name", if(e1.mgr = 0, "CEO", e2.ename) as "manager name" from emp e1 left join emp e2 on e1.mgr = e2.empno;
++---------------+--------------+
+| employee name | manager name |
++---------------+--------------+
+| SMITH         | FORD         |
+| ALLEN         | BLAKE        |
+| WARD          | BLAKE        |
+| JONES         | KING         |
+| MARTIN        | BLAKE        |
+| BLAKE         | KING         |
+| CLARK         | KING         |
+| SCOTT         | JONES        |
+| KING          | CEO          |
+| TURNER        | BLAKE        |
+| ADAMS         | SCOTT        |
+| JAMES         | BLAKE        |
+| FORD          | JONES        |
+| MILLER        | CLARK        |
++---------------+--------------+
+14 rows in set (0.00 sec)
+
+
+14) Write a trigger to delete department, dependent table must be reflected accordingly.
+
+mysql> insert into dept(deptno, deptname, loc) values(1, "main", "new york");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into dept(deptno, deptname, loc) values(0, "another", "new york");
+Query OK, 1 row affected (0.01 sec)
+
+========================= trigger for changing dept to main ==============================
+
+mysql> delimiter &&
+mysql> create trigger delete_dept
+    -> before delete on dept for each row
+    -> begin
+    ->  update emp set deptno = 1 where deptno = old.deptno;
+    -> end &&
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> delimiter ;
+
+==========================================================================================
+
+mysql> insert into emp values(24, "RAJESH", "CLERK", 7698, "1982-01-25", 500, NULL, 0);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> delete from dept where deptno = 0;
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from emp where empno = 24;
++-------+--------+-------+------+------------+-----+------+--------+
+| empno | ename  | job   | mgr  | hiredate   | sal | comm | deptno |
++-------+--------+-------+------+------------+-----+------+--------+
+|    24 | RAJESH | CLERK | 7698 | 1982-01-25 | 500 | NULL |      1 |
++-------+--------+-------+------+------------+-----+------+--------+
+1 row in set (0.00 sec)
 
 
 
