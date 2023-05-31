@@ -1,0 +1,263 @@
+============================================================ Roadway travels ====================================================================
+
+a) Create the tables with the appropriate integrity constraints
+
+mysql> create database travels;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> use travels;
+Database changed
+mysql> create table bus(busno int not null auto_increment, source varchar(20) not null, destination varchar(20) not null, couch varchar(20) not null, primary key(busno));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>
+mysql> desc bus;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| busno       | int(11)     | NO   | PRI | NULL    | auto_increment |
+| source      | varchar(20) | NO   |     | NULL    |                |
+| destination | varchar(20) | NO   |     | NULL    |                |
+| couch       | varchar(20) | NO   |     | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+4 rows in set (0.02 sec)
+
+mysql> create table reservation(pnrno int not null auto_increment, journeydate date, contact varchar(10) not null, seats int not null, busno int not null, address varchar(20) not null, primary key(pnrno), foreign key(busno) references bus(busno));
+Query OK, 0 rows affected (0.06 sec)
+
+mysql>
+mysql> desc reservation;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| pnrno       | int(11)     | NO   | PRI | NULL    | auto_increment |
+| journeydate | date        | YES  |     | NULL    |                |
+| contact     | varchar(10) | NO   |     | NULL    |                |
+| seats       | int(11)     | NO   |     | NULL    |                |
+| busno       | int(11)     | NO   | MUL | NULL    |                |
+| address     | varchar(20) | NO   |     | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+6 rows in set (0.02 sec)
+
+
+mysql> create table ticket(ticketno int not null auto_increment, journeydate date not null, age int not null, deptime time not null,  sex varchar(10), source varchar(20) not null, destination varchar(20) not null, busno int not null, primary key(ticketno), foreign key(busno) references bus(busno));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> desc ticket;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| ticketno    | int(11)     | NO   | PRI | NULL    | auto_increment |
+| journeydate | date        | NO   |     | NULL    |                |
+| age         | int(11)     | NO   |     | NULL    |                |
+| deptime     | time        | NO   |     | NULL    |                |
+| sex         | varchar(10) | YES  |     | NULL    |                |
+| source      | varchar(20) | NO   |     | NULL    |                |
+| destination | varchar(20) | NO   |     | NULL    |                |
+| busno       | int(11)     | NO   | MUL | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+8 rows in set (0.01 sec)
+
+
+mysql>
+mysql> create table passenger(id int not null auto_increment,name varchar(20) not null, ticketno int not null, pnrno int not null, age int not null, sex varchar(10) not null, contact varchar(10) not null, primary key(id), foreign key(ticketno) references ticket(ticketno), foreign key(pnrno) references reservation(pnrno));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> desc passenger;
++----------+-------------+------+-----+---------+----------------+
+| Field    | Type        | Null | Key | Default | Extra          |
++----------+-------------+------+-----+---------+----------------+
+| id       | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name     | varchar(20) | NO   |     | NULL    |                |
+| ticketno | int(11)     | NO   | MUL | NULL    |                |
+| pnrno    | int(11)     | NO   | MUL | NULL    |                |
+| age      | int(11)     | NO   |     | NULL    |                |
+| sex      | varchar(10) | NO   |     | NULL    |                |
+| contact  | varchar(10) | NO   |     | NULL    |                |
++----------+-------------+------+-----+---------+----------------+
+7 rows in set (0.01 sec)
+
+mysql> create table cancellation(id int not null auto_increment, pnrno int not null, journeydate date not null, ticketno int not null, contact varchar(10) not null, primary key(id), foreign key(pnrno) references reservation(pnrno), foreign key(ticketno) references ticket(ticketno));
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> desc cancellation;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| id          | int(11)     | NO   | PRI | NULL    | auto_increment |
+| pnrno       | int(11)     | NO   | MUL | NULL    |                |
+| journeydate | date        | NO   |     | NULL    |                |
+| ticketno    | int(11)     | NO   | MUL | NULL    |                |
+| contact     | varchar(10) | NO   |     | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+5 rows in set (0.05 sec)
+
+
+mysql> create table records(recordid int not null auto_increment, pnrno int not null, ticketno int not null, primary key(recordid), foreign key(pnrno) references reservation(pnrno), foreign key(ticketno) references ticket(ticketno));
+Query OK, 0 rows affected (0.06 sec)
+
+
+
+b) Insert around 10 records in each of the tables.
+
+mysql> insert into bus(source, destination, couch) values("pune", "nagpur", "sleeper"), ( "nagpur","pune", "sleeper"),( "nagpur","nashik", "sleeper"),( "pune","nashik", "sleeper"),( "pune","mumbai", "sleeper"),( "mumbai", "pune","sleeper"),( "mumbai", "nagpur","sleeper"),("nagpur","shegaon", "sleeper");
+Query OK, 10 rows affected (0.04 sec)
+
+mysql> select * from bus;
++-------+--------+-------------+---------+
+| busno | source | destination | couch   |
++-------+--------+-------------+---------+
+|     1 | pune   | nagpur      | sleeper |
+|     2 | nagpur | pune        | sleeper |
+|     3 | nagpur | nashik      | sleeper |
+|     4 | pune   | nashik      | sleeper |
+|     5 | pune   | mumbai      | sleeper |
+|     6 | mumbai | pune        | sleeper |
+|     7 | mumbai | nagpur      | sleeper |
+|     8 | nagpur | shegaon     | sleeper |
++-------+--------+-------------+---------+
+8 rows in set (0.00 sec)
+
+
+mysql> select * from reservation;
++-------+-------------+------------+-------+-------+---------+
+| pnrno | journeydate | contact    | seats | busno | address |
++-------+-------------+------------+-------+-------+---------+
+|     1 | 2023-05-25  | 9876543210 |     3 |     1 | pune    |
+|     2 | 2023-05-25  | 9876548810 |     3 |     2 | nagpur  |
+|     3 | 2023-05-26  | 9336543210 |     3 |     8 | pune    |
+|     4 | 2023-05-15  | 9876548810 |     3 |     7 | nagpur  |
+|     5 | 2023-05-26  | 9336543210 |     3 |     8 | pune    |
+|     6 | 2023-05-15  | 9876548810 |     3 |     7 | nagpur  |
+|     7 | 2023-05-29  | 9876577770 |     2 |     7 | mumbai  |
+|     8 | 2023-05-25  | 9872563810 |     3 |     1 | goa     |
++-------+-------------+------------+-------+-------+---------+
+8 rows in set (0.00 sec)
+
+mysql> select * from ticket;
++----------+-------------+-----+----------+--------+--------+-------------+-------+
+| ticketno | journeydate | age | deptime  | sex    | source | destination | busno |
++----------+-------------+-----+----------+--------+--------+-------------+-------+
+|        1 | 2023-05-25  |  34 | 10:24:37 | male   | pune   | nagpur      |     1 |
+|        2 | 2023-05-25  |  34 | 10:25:24 | female | nagpur | pune        |     2 |
+|        3 | 2023-05-25  |  31 | 10:26:05 | female | pune   | goa         |    10 |
+|        5 | 2023-05-26  |  31 | 10:27:25 | male   | nagpur | shegaon     |     8 |
+|        6 | 2023-05-29  |  41 | 10:30:37 | female | mumbai | nagpur      |     7 |
+|        7 | 2023-05-15  |  38 | 10:31:17 | female | mumbai | nagpur      |     7 |
++----------+-------------+-----+----------+--------+--------+-------------+-------+
+6 rows in set (0.00 sec)
+
+mysql> select * from passenger;
++----+---------+----------+-------+-----+--------+------------+
+| id | name    | ticketno | pnrno | age | sex    | contact    |
++----+---------+----------+-------+-----+--------+------------+
+|  1 | rajesh  |        1 |     1 |  34 | male   | 9876543210 |
+|  2 | riya    |        2 |     2 |  34 | female | 9876543210 |
+|  3 | ramya   |        6 |     7 |  40 | female | 9876543210 |
+|  4 | surekha |        7 |     7 |  37 | female | 9876543210 |
++----+---------+----------+-------+-----+--------+------------+
+4 rows in set (0.00 sec)
+
+
+c) Display all the names of male passengers. 
+
+mysql> select * from passenger where sex = "male";
++----+--------+----------+-------+-----+------+------------+
+| id | name   | ticketno | pnrno | age | sex  | contact    |
++----+--------+----------+-------+-----+------+------------+
+|  1 | rajesh |        1 |     1 |  34 | male | 9876543210 |
++----+--------+----------+-------+-----+------+------------+
+1 row in set (0.00 sec)
+
+
+d) Find the ticket numbers of the passengers whose name start with ‘r’ and ends with ‘h’
+
+
+mysql> select name, ticketno, pnrno, sex, age, contact from passenger where name like "r%h";
++--------+----------+-------+--------+-----+------------+
+| name   | ticketno | pnrno | sex    | age | contact    |
++--------+----------+-------+--------+-----+------------+
+| rajesh |        1 |     1 | male   |  34 | 9876543210 |
+| riya   |        2 |     2 | female |  34 | 9876543210 |
++--------+----------+-------+--------+-----+------------+
+2 rows in set (0.00 sec)
+
+
+e) Find the names of passengers whose age is between 30 and 45.
+
+mysql> select * from passenger where age > 30 and age < 45;
++----+---------+----------+-------+-----+--------+------------+
+| id | name    | ticketno | pnrno | age | sex    | contact    |
++----+---------+----------+-------+-----+--------+------------+
+|  1 | rajesh  |        1 |     1 |  34 | male   | 9876543210 |
+|  2 | riya    |        2 |     2 |  34 | female | 9876543210 |
+|  3 | ramya   |        6 |     7 |  40 | female | 9876543210 |
+|  4 | surekha |        7 |     7 |  37 | female | 9876543210 |
++----+---------+----------+-------+-----+--------+------------+
+4 rows in set (0.00 sec)
+
+
+f) Display the sorted list of passenger’s names.
+
+mysql> select * from passenger order by name asc;
++----+---------+----------+-------+-----+--------+------------+
+| id | name    | ticketno | pnrno | age | sex    | contact    |
++----+---------+----------+-------+-----+--------+------------+
+|  1 | rajesh  |        1 |     1 |  34 | male   | 9876543210 |
+|  3 | ramya   |        6 |     7 |  40 | female | 9876543210 |
+|  2 | riya    |        2 |     2 |  34 | female | 9876543210 |
+|  4 | surekha |        7 |     7 |  37 | female | 9876543210 |
++----+---------+----------+-------+-----+--------+------------+
+4 rows in set (0.00 sec)
+
+
+g) Find the number of tickets booked by a passenger where the number of seats is greater than 1.
+
+mysql> select reservation.pnrno, passenger.name, reservation.seats as "No of seats booked" from reservation inner join passenger on passenger.pnrno = reservation.pnrno where reservation.seats > 1;
++-------+---------+--------------------+
+| pnrno | name    | No of seats booked |
++-------+---------+--------------------+
+|     1 | rajesh  |                  3 |
+|     2 | riya    |                  3 |
+|     7 | ramya   |                  2 |
+|     7 | surekha |                  2 |
++-------+---------+--------------------+
+4 rows in set (0.00 sec)
+
+
+h) Display the Total number of Reservation per bus number
+
+mysql> select reservation.busno as "Bus No", count(reservation.pnrno) as "Total Reservations", bus.source, bus.destination from reservation inner join bus on bus.busno = reservation.busno group by reservation.busno;
++--------+--------------------+--------+-------------+
+| Bus No | Total Reservations | source | destination |
++--------+--------------------+--------+-------------+
+|      1 |                  2 | pune   | nagpur      |
+|      2 |                  1 | nagpur | pune        |
+|      7 |                  3 | mumbai | nagpur      |
+|      8 |                  2 | nagpur | shegaon     |
++--------+--------------------+--------+-------------+
+4 rows in set (0.00 sec)
+
+
+i) Write a procedure to display the ticket numbers and names of all the passenger
+
+mysql> delimiter &&
+mysql> create procedure displayPassenger()
+    -> begin
+    -> select ticketno, name, age, sex, contact from passenger;
+    -> end &&
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> delimiter ;
+mysql> call displayPassenger();
++----------+---------+-----+--------+------------+
+| ticketno | name    | age | sex    | contact    |
++----------+---------+-----+--------+------------+
+|        1 | rajesh  |  34 | male   | 9876543210 |
+|        2 | riya    |  34 | female | 9876543210 |
+|        6 | ramya   |  40 | female | 9876543210 |
+|        7 | surekha |  37 | female | 9876543210 |
++----------+---------+-----+--------+------------+
+4 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
