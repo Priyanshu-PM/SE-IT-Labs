@@ -138,6 +138,247 @@ mysql> select * from loan;
 
 ================================================== queries ===================================================================
 
+========================================== triggers for deposit balance amount ===============================================
+
+mysql> delimiter &&
+mysql> create trigger addDeposit
+    -> after insert on transaction for each row
+    -> begin
+    -> update account set balance = balance + new.deposit where accno = new.accno;
+    -> end &&
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> delimiter ;
+
+========================================== triggers for withdraw balance amount ===============================================
 
 
+mysql> delimiter &&
+mysql> create trigger withdrawamt
+    -> before insert on transaction for each row
+    -> begin
+    ->  declare acc_bal float;
+    ->  set acc_bal = (select balance from account where accno = new.accno);
+    ->  if(new.withdraw > acc_bal) then
+    ->          signal sqlstate '45000' set message_text = "Insufficient Balance";
+    ->  else
+    ->          update account set balance = balance - new.withdraw where accno = new.accno;
+    ->  end if;
+    -> end &&
+Query OK, 0 rows affected (0.04 sec)
 
+mysql> delimiter ;
+
+
+=========================================== queries ======================================
+
+a)List the details of account holders who have a ‘savings’ account.
+
+mysql> select customer.name as "Customer Name", customer.address, customer.age, customer.contact, customer.email, account.accno from account
+    -> inner join customer on customer.cusid = account.cusid
+    -> inner join accounttype on account.acctype = accounttype.id
+    -> where accounttype.acc_name = "savings";
++---------------+---------+-----+------------+---------------+-------+
+| Customer Name | address | age | contact    | email         | accno |
++---------------+---------+-----+------------+---------------+-------+
+| pranay        | nagpur  |  21 | 0123456789 | def@gmail.com |     2 |
+| priyanshu     | pune    |  20 | 9876543210 | abc@gmail.com |     6 |
++---------------+---------+-----+------------+---------------+-------+
+2 rows in set (0.04 sec)
+
+mysql> select customer.name as "Customer Name", customer.address, customer.age, customer.contact, customer.email, account.accno from account
+    -> inner join customer on customer.cusid = account.cusid
+    -> inner join accounttype on account.acctype = accounttype.id
+    -> where accounttype.acc_name = "savings";
++---------------+---------+-----+------------+---------------+-------+
+| Customer Name | address | age | contact    | email         | accno |
++---------------+---------+-----+------------+---------------+-------+
+| pranay        | nagpur  |  21 | 0123456789 | def@gmail.com |     2 |
+| priyanshu     | pune    |  20 | 9876543210 | abc@gmail.com |     6 |
++---------------+---------+-----+------------+---------------+-------+
+2 rows in set (0.04 sec)
+
+b) List the Name and address of account holders with loan amount more than 5000.
+
+mysql> select customer.name as "Customer Name", customer.address as "Address", loan.accno as "Account No", concat(loan.amount, " Rs") as "Loan Amount" from loan
+    -> inner join account on loan.accno = account.accno
+    -> inner join customer on account.cusid = customer.cusid
+    -> where loan.amount > 5000;
++---------------+---------+------------+-------------+
+| Customer Name | Address | Account No | Loan Amount |
++---------------+---------+------------+-------------+
+| priyanshu     | pune    |          1 | 6000 Rs     |
+| priyanshu     | pune    |          6 | 8000 Rs     |
++---------------+---------+------------+-------------+
+2 rows in set (0.00 sec)
+
+
+c) Change the name of the customer to ‘ABC’ whose account number is 1
+
+mysql> update customer set name = "ABC" where cusid = (select cusid from account where accno = 1);
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from customer;
++-------+--------+---------+-----+------------+---------------+
+| cusid | name   | address | age | contact    | email         |
++-------+--------+---------+-----+------------+---------------+
+|     1 | ABC    | pune    |  20 | 9876543210 | abc@gmail.com |
+|     2 | pranay | nagpur  |  21 | 0123456789 | def@gmail.com |
+|     3 | rajesh | goa     |  21 | 1234509876 | ghi@gmail.com |
+|     4 | suresh | panvel  |  25 | 1098761234 | xyz@gmail.com |
++-------+--------+---------+-----+------------+---------------+
+4 rows in set (0.00 sec)
+
+
+d) List the account number with total deposit more than 30,000
+
+mysql> select customer.name, customer.address, customer.contact, customer.email, transaction.accno as "account no", sum(transaction.deposit) as "Total Deposit" from transaction
+    -> inner join account on transaction.accno = account.accno
+    -> inner join customer on account.cusid = customer.cusid
+    -> group by transaction.accno
+    -> having sum(transaction.deposit) > 30000;
++--------+---------+------------+---------------+------------+---------------+
+| name   | address | contact    | email         | account no | Total Deposit |
++--------+---------+------------+---------------+------------+---------------+
+| ABC    | pune    | 9876543210 | abc@gmail.com |          7 |         90000 |
+| rajesh | goa     | 1234509876 | ghi@gmail.com |          9 |         60000 |
++--------+---------+------------+---------------+------------+---------------+
+2 rows in set (0.00 sec)
+
+
+e)List the number of fixed deposit accounts in the bank.
+
+mysql> select customer.name, customer.address, customer.contact, customer.email, account.accno from account
+    -> inner join customer on account.cusid = customer.cusid
+    -> inner join accounttype on account.acctype = accounttype.id
+    -> where accounttype.acc_name = "fixed";
++--------+---------+------------+---------------+-------+
+| name   | address | contact    | email         | accno |
++--------+---------+------------+---------------+-------+
+| ABC    | pune    | 9876543210 | abc@gmail.com |     1 |
+| pranay | nagpur  | 0123456789 | def@gmail.com |     3 |
+| rajesh | goa     | 1234509876 | ghi@gmail.com |     5 |
+| ABC    | pune    | 9876543210 | abc@gmail.com |     8 |
+| rajesh | goa     | 1234509876 | ghi@gmail.com |     9 |
++--------+---------+------------+---------------+-------+
+5 rows in set (0.00 sec)
+
+
+f) Display the details of customers who created their accounts between ’20-jan-08’ to ’20-aug-08’.
+
+mysql> select customer.name, customer.address, customer.contact, customer.email, account.accno as "account no", account.created as "created at" from account
+    -> inner join customer on account.cusid = customer.cusid
+    -> where account.created > "2008-01-20" and account.created < "2008-08-20";
++--------+---------+------------+---------------+------------+------------+
+| name   | address | contact    | email         | account no | created at |
++--------+---------+------------+---------------+------------+------------+
+| ABC    | pune    | 9876543210 | abc@gmail.com |          8 | 2008-02-21 |
+| rajesh | goa     | 1234509876 | ghi@gmail.com |          9 | 2008-03-25 |
++--------+---------+------------+---------------+------------+------------+
+2 rows in set (0.00 sec)
+
+
+g) Display the detailed transactions on 28th Aug, 2008.
+
+mysql> select transaction.tid as "transaction id", transaction.accno as "account no", customer.name, transaction.deposit, transaction.withdraw, transaction.tdate from transaction
+    -> inner join account on transaction.accno = account.accno
+    -> inner join customer on account.cusid = customer.cusid
+    -> where transaction.tdate = "2008-08-29";
++----------------+------------+------+---------+----------+------------+
+| transaction id | account no | name | deposit | withdraw | tdate      |
++----------------+------------+------+---------+----------+------------+
+|             12 |          8 | ABC  |       0 |    15000 | 2008-08-29 |
+|             13 |          8 | ABC  |    5000 |        0 | 2008-08-29 |
++----------------+------------+------+---------+----------+------------+
+2 rows in set (0.00 sec)
+
+
+h) Display the total amount deposited and withdrawn on 29th Aug, 2008.
+
+mysql> select sum(deposit) as "Total Amount Deposited", sum(withdraw) as "Total Amount Withdraw" from transaction where tdate = "2008-08-29";
++------------------------+-----------------------+
+| Total Amount Deposited | Total Amount Withdraw |
++------------------------+-----------------------+
+|                   5000 |                 15000 |
++------------------------+-----------------------+
+1 row in set (0.00 sec)
+
+
+i) List the details of customers who have a loan.
+
+mysql> select loan.loanid as "loan id", loan.loandate as "taken at", loan.amount as "loan amount", loan.accno as "account no", customer.name, customer.address, customer.contact, customer.email from loan
+    -> inner join account on loan.accno = account.accno
+    -> inner join customer on account.cusid = customer.cusid;
++---------+------------+-------------+------------+--------+---------+------------+---------------+
+| loan id | taken at   | loan amount | account no | name   | address | contact    | email         |
++---------+------------+-------------+------------+--------+---------+------------+---------------+
+|       1 | 2023-05-31 |        6000 |          1 | ABC    | pune    | 9876543210 | abc@gmail.com |
+|       3 | 2023-05-31 |        8000 |          6 | ABC    | pune    | 9876543210 | abc@gmail.com |
+|       2 | 2023-05-31 |        5000 |          2 | pranay | nagpur  | 0123456789 | def@gmail.com |
++---------+------------+-------------+------------+--------+---------+------------+---------------+
+3 rows in set (0.00 sec)
+
+
+j) Write a procedures to display Savings and Loan information of all customers.
+
+mysql> delimiter &&
+mysql> create procedure customerinfo()
+    -> begin
+    -> select customer.name, customer.contact, customer.email, account.accno as "account no", account.balance as "account balance", loan.loandate, loan.amount from customer
+    -> left join account on customer.cusid = account.cusid
+    -> left join loan on account.accno = loan.accno;
+    -> end &&
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> delimiter ;
+mysql> call customerinfo();
++--------+------------+---------------+------------+-----------------+------------+--------+
+| name   | contact    | email         | account no | account balance | loandate   | amount |
++--------+------------+---------------+------------+-----------------+------------+--------+
+| ABC    | 9876543210 | abc@gmail.com |          1 |          155000 | 2023-05-31 |   6000 |
+| pranay | 0123456789 | def@gmail.com |          2 |          135000 | 2023-05-31 |   5000 |
+| ABC    | 9876543210 | abc@gmail.com |          6 |          150000 | 2023-05-31 |   8000 |
+| ABC    | 9876543210 | abc@gmail.com |          7 |          180000 | NULL       |   NULL |
+| ABC    | 9876543210 | abc@gmail.com |          8 |           85000 | NULL       |   NULL |
+| pranay | 0123456789 | def@gmail.com |          3 |          150000 | NULL       |   NULL |
+| rajesh | 1234509876 | ghi@gmail.com |          5 |          150000 | NULL       |   NULL |
+| rajesh | 1234509876 | ghi@gmail.com |          9 |           65000 | NULL       |   NULL |
+| suresh | 1098761234 | xyz@gmail.com |       NULL |            NULL | NULL       |   NULL |
++--------+------------+---------------+------------+-----------------+------------+--------+
+9 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.03 sec)
+
+
+k) Write a trigger to delete the customer.
+
+mysql> delimiter &&
+mysql> create trigger deletecustomer
+    -> after insert on customer for each row
+    ->  begin
+    ->  if(new.name = "Vijay Malya") then
+    ->  delete from customer where name = "Vijay Malya";
+    ->  signal sqlstate '45000' set message_text = "Bank ka paisa wapas kar be";
+    ->  end if;
+    -> end &&
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> delimiter ;
+
+======================================================
+
+mysql> delimiter &&
+mysql> create trigger deletecustomer
+    -> before insert on customer for each row
+    -> begin
+    -> if(new.name = "Vijay Malya") then
+    -> signal sqlstate '45000' set message_text = "nigh ikadna";
+    -> end if;
+    -> end &&
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> delimiter ;
+
+mysql> insert into customer(name, address, age, contact, email) values("Vijay Malya", "UK", 50, "1234567890", "paisa@gmail.com");
+ERROR 1644 (45000): nigh ikadna
