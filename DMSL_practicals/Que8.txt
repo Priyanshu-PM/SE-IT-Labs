@@ -1,0 +1,157 @@
+======================================= department and employee given table =============================================
+
+mysql> create table dept(deptno int not null, deptname varchar(20) not null, loc varchar(20) not null, primary key(deptno));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> insert into dept values(10, "accounting", "new york"), (20, "research", "dallas"),(30, "sales", "chicago"),(40, "operations", "boston");
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> create table emp(empno int not null, ename varchar(20) not null, job varchar(20) not null, mgr int not null, hiredate date not null, sal int not null, comm int, deptno int not null, primary key(empno), foreign key(deptno) references dept(deptno));
+Query OK, 0 rows affected (0.03 sec)
+
+
+mysql> INSERT INTO EMP (empno, ename, job, mgr, hiredate, sal, comm, deptno) VALUES
+    -> (7369, 'SMITH', 'CLERK', 7902, '1980-12-17', 800, NULL, 20),
+    -> (7499, 'ALLEN', 'SALESMAN', 7698, '1981-02-20', 1600, 300, 30),
+    -> (7521, 'WARD', 'SALESMAN', 7698, '1981-02-22', 1250, 500, 30),
+    -> (7566, 'JONES', 'MANAGER', 7839, '1981-04-02', 2975, NULL, 20),
+    -> (7654, 'MARTIN', 'SALESMAN', 7698, '1981-09-28', 1250, 1400, 30),
+    -> (7698, 'BLAKE', 'MANAGER', 7839, '1981-05-01', 2850, NULL, 30),
+    -> (7782, 'CLARK', 'MANAGER', 7839, '1981-06-09', 2450, NULL, 10),
+    -> (7788, 'SCOTT', 'ANALYST', 7566, '1982-12-09', 3000, NULL, 20),
+    -> (7839, 'KING', 'PRESIDENT', NULL, '1981-11-17', 5000, NULL, 10),
+    -> (7844, 'TURNER', 'SALESMAN', 7698, '1981-09-08', 1500, 0, 30),
+    -> (7876, 'ADAMS', 'CLERK', 7788, '1983-01-12', 1100, NULL, 20),
+    -> (7900, 'JAMES', 'CLERK', 7698, '1981-12-03', 950, NULL, 30),
+    -> (7902, 'FORD', 'ANALYST', 7566, '1981-12-03', 3000, NULL, 20),
+    -> (7934, 'MILLER', 'CLERK', 7782, '1982-01-23', 1300, NULL, 10);
+Query OK, 14 rows affected, 1 warning (0.00 sec)
+Records: 14  Duplicates: 0  Warnings: 1
+
+
+1) Display all the ANALYSTs whose name doesn’t ends with ‘S’ 
+
+mysql> select * from emp where job = "ANALYST" and ename not like "%S";
++-------+-------+---------+------+------------+------+------+--------+
+| empno | ename | job     | mgr  | hiredate   | sal  | comm | deptno |
++-------+-------+---------+------+------------+------+------+--------+
+|  7788 | SCOTT | ANALYST | 7566 | 1982-12-09 | 3000 | NULL |     20 |
+|  7902 | FORD  | ANALYST | 7566 | 1981-12-03 | 3000 | NULL |     20 |
++-------+-------+---------+------+------------+------+------+--------+
+2 rows in set (0.00 sec)
+
+
+2) Display all the employees who are earning more than all the managers.
+
+mysql> select * from emp where sal > (select max(sal) from emp where job = "MANAGER");
++-------+-------+-----------+------+------------+------+------+--------+
+| empno | ename | job       | mgr  | hiredate   | sal  | comm | deptno |
++-------+-------+-----------+------+------------+------+------+--------+
+|  7788 | SCOTT | ANALYST   | 7566 | 1982-12-09 | 3000 | NULL |     20 |
+|  7839 | KING  | PRESIDENT |    0 | 1981-11-17 | 5000 | NULL |     10 |
+|  7902 | FORD  | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |     20 |
++-------+-------+-----------+------+------------+------+------+--------+
+3 rows in set (0.00 sec)
+
+
+3) Display all the managers working in 20 & 30 department.
+
+mysql> select * from emp where job = "MANAGER" and deptno in(20, 30);
++-------+-------+---------+------+------------+------+------+--------+
+| empno | ename | job     | mgr  | hiredate   | sal  | comm | deptno |
++-------+-------+---------+------+------------+------+------+--------+
+|  7566 | JONES | MANAGER | 7839 | 1981-04-02 | 2975 | NULL |     20 |
+|  7698 | BLAKE | MANAGER | 7839 | 1981-05-01 | 2850 | NULL |     30 |
++-------+-------+---------+------+------------+------+------+--------+
+2 rows in set (0.00 sec)
+
+
+4) Display all the managers who don’t have a manager
+
+mysql> select * from emp where job = "MANAGER" and mgr not in(select empno from emp where job = "MANAGER");
++-------+-------+---------+------+------------+------+------+--------+
+| empno | ename | job     | mgr  | hiredate   | sal  | comm | deptno |
++-------+-------+---------+------+------------+------+------+--------+
+|  7566 | JONES | MANAGER | 7839 | 1981-04-02 | 2975 | NULL |     20 |
+|  7698 | BLAKE | MANAGER | 7839 | 1981-05-01 | 2850 | NULL |     30 |
+|  7782 | CLARK | MANAGER | 7839 | 1981-06-09 | 2450 | NULL |     10 |
++-------+-------+---------+------+------------+------+------+--------+
+3 rows in set (0.00 sec)
+
+
+5) Display the second maximum salary.
+
+mysql> select sal  as "Second Max Salary" from emp where sal < (select max(sal) from emp) order by sal desc limit 1;
++-------------------+
+| Second Max Salary |
++-------------------+
+|              3000 |
++-------------------+
+1 row in set (0.00 sec)
+
+
+6) Display the departments that are having more than 3 employees under it.
+
+mysql> select dept.deptno, dept.deptname, count(distinct emp.empno) as "total employees" from dept
+    -> inner join emp on emp.deptno = dept.deptno
+    -> group by dept.deptno, dept.deptname
+    -> having count(distinct emp.empno) > 3;
++--------+----------+-----------------+
+| deptno | deptname | total employees |
++--------+----------+-----------------+
+|     20 | research |               5 |
+|     30 | sales    |               6 |
++--------+----------+-----------------+
+2 rows in set (0.00 sec)
+
+
+7) Display job-wise average salaries for the employees whose employee number is not from 7788 to 7790.
+
+mysql> select empno, ename, job, avg(sal) as "average salary" from emp
+    -> where empno < 7788 or empno > 7790
+    -> group by job;
++-------+-------+-----------+----------------+
+| empno | ename | job       | average salary |
++-------+-------+-----------+----------------+
+|  7902 | FORD  | ANALYST   |      3000.0000 |
+|  7369 | SMITH | CLERK     |      1037.5000 |
+|  7566 | JONES | MANAGER   |      2758.3333 |
+|  7839 | KING  | PRESIDENT |      5000.0000 |
+|  7499 | ALLEN | SALESMAN  |      1400.0000 |
++-------+-------+-----------+----------------+
+5 rows in set (0.00 sec)
+
+
+9) Display the third maximum salary.
+
+mysql> select sal as "Third Maximum Salary" from emp where sal < (select max(sal) from emp where sal < (select max(sal) from emp) order by sal desc limit 1) order by sal desc limit 1;
++----------------------+
+| Third Maximum Salary |
++----------------------+
+|                 2975 |
++----------------------+
+1 row in set (0.00 sec)
+
+
+10)Display all the managers & clerk who work in Accounting and Marketing (SALES) departments.
+
+mysql> select emp.*, dept.deptname from emp
+    -> inner join dept on dept.deptno = emp.deptno
+    -> where dept.deptname in("accounting", "sales") and emp.job in ("manager", "clerk");
++-------+--------+---------+------+------------+------+------+--------+------------+
+| empno | ename  | job     | mgr  | hiredate   | sal  | comm | deptno | deptname   |
++-------+--------+---------+------+------------+------+------+--------+------------+
+|  7698 | BLAKE  | MANAGER | 7839 | 1981-05-01 | 2850 | NULL |     30 | sales      |
+|  7782 | CLARK  | MANAGER | 7839 | 1981-06-09 | 2450 | NULL |     10 | accounting |
+|  7900 | JAMES  | CLERK   | 7698 | 1981-12-03 |  950 | NULL |     30 | sales      |
+|  7934 | MILLER | CLERK   | 7782 | 1982-01-23 | 1300 | NULL |     10 | accounting |
++-------+--------+---------+------+------------+------+------+--------+------------+
+4 rows in set (0.00 sec)
+
+
+
+
+
+
+
