@@ -166,6 +166,105 @@ Empty set (0.00 sec)
 
 8) Which workers having specialization in polishing start their job in September?
 
+mysql> SELECT w.worker_id, w.name, ja.starting_date
+    -> FROM WORKER w
+    -> JOIN JOB_ASSIGNED ja ON w.worker_id = ja.worker_id
+    -> WHERE w.specialized_in = 'polishing' AND MONTH(ja.starting_date) = 9;
+Empty set (0.00 sec)
 
 
+9) Display details of workers who are specialized in the same field as that of 
+Mr.Cacophonix or have a wage per hour more than any of the workers.
 
+mysql> SELECT w.worker_id, w.name, w.wage_per_hour, w.specialized_in
+    -> FROM WORKER w
+    -> WHERE w.specialized_in = (
+    ->   SELECT specialized_in
+    ->   FROM WORKER
+    ->   WHERE name = 'Mr. Cacophonix'
+    -> )
+    -> OR w.wage_per_hour > (
+    ->   SELECT MAX(wage_per_hour)
+    ->   FROM WORKER
+    -> );
+Empty set (0.00 sec)
+
+
+10) Display job details of all those jobs where at least 25 workers are working.
+
+mysql> SELECT j.job_id, j.type_of_job, j.status, COUNT(ja.worker_id) AS num_workers
+    -> FROM JOB j
+    -> JOIN JOB_ASSIGNED ja ON j.job_id = ja.job_id
+    -> GROUP BY j.job_id, j.type_of_job, j.status
+    -> HAVING COUNT(ja.worker_id) >= 25;
+Empty set (0.00 sec)
+
+
+11) Display all those jobs that are already incompleted.
+
+mysql> SELECT job_id, type_of_job, status
+    -> FROM JOB
+    -> WHERE status != 'Completed';
++--------+--------------+-------------+
+| job_id | type_of_job  | status      |
++--------+--------------+-------------+
+|      1 | Renovation   | In Progress |
+|      3 | Installation | In Progress |
+|      4 | Repair       | Pending     |
++--------+--------------+-------------+
+3 rows in set (0.00 sec)
+
+
+12) Find all the jobs, which begin within the next two weeks.
+
+mysql> SELECT ja.job_id, job.type_of_job, ja.starting_date from job_assigned ja
+    -> inner join job on job.job_id = ja.job_id
+    -> WHERE ja.starting_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 2 WEEK);
+Empty set (0.00 sec)
+
+
+13) List all workers who have their wage per hour ten times greater than the wage of their managers.
+
+mysql> SELECT w.worker_id, w.name, w.wage_per_hour, m.name AS manager_name, m.wage_per_hour AS manager_wage
+    -> FROM WORKER w
+    -> JOIN WORKER m ON w.manager_id = m.worker_id
+    -> WHERE w.wage_per_hour > (m.wage_per_hour * 10);
+Empty set (0.00 sec)
+
+
+14) List the names of workers who have been assigned the job of Packing.
+
+mysql> SELECT w.name
+    -> FROM WORKER w
+    -> JOIN JOB_ASSIGNED ja ON w.worker_id = ja.worker_id
+    -> JOIN JOB j ON ja.job_id = j.job_id
+    -> WHERE j.type_of_job = 'Packing';
+Empty set (0.00 sec)
+
+
+15) Find the names of the workers who are getting more then 50 Rs. as wages per hour.
+
+mysql> SELECT name
+    -> FROM WORKER
+    -> WHERE wage_per_hour > 50;
+Empty set (0.00 sec)
+
+16) Find the jobs which are assigned after 31-DEC-2008.
+
+mysql> SELECT ja.job_id, j.type_of_job, ja.starting_date
+    -> FROM JOB_ASSIGNED ja
+    -> JOIN JOB j ON ja.job_id = j.job_id
+    -> WHERE ja.starting_date > '2008-12-31';
++--------+--------------+---------------+
+| job_id | type_of_job  | starting_date |
++--------+--------------+---------------+
+|      1 | Renovation   | 2023-05-01    |
+|      2 | Maintenance  | 2023-05-03    |
+|      1 | Renovation   | 2023-05-05    |
+|      3 | Installation | 2023-05-07    |
+|      2 | Maintenance  | 2023-05-09    |
++--------+--------------+---------------+
+5 rows in set (0.00 sec)
+
+
+======================================================== end =============================================================
