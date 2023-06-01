@@ -106,12 +106,12 @@ void dashDotDashLine(int x1, int y1, int x2, int y2)
         }
         else
         {
-            i += 4;
-            x += 2*Xin;
-            y += 2*Yin;
+            i += 8;
+            x += 4*Xin;
+            y += 4*Yin;
             displayPoint(x, y);
-            x += 2*Xin;
-            y += 2*Yin;
+            x += 4*Xin;
+            y += 4*Yin;
             patternIndex = 0;
         }
     }

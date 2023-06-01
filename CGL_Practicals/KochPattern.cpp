@@ -1,4 +1,4 @@
-//  Problem Statement : Draw a fractal pattern using Koch CURVECAPS
+//  Problem Statement : Draw a fractal pattern using Koch curves
 
 #include <GL/glut.h>
 #include <bits/stdc++.h>
