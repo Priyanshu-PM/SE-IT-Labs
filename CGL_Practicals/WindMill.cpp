@@ -28,6 +28,8 @@ void drawWindMill()
     for(int i = 0; i < 4; i++)
     {
         glRotated(90, 0, 0, 1);
+        
+        glBegin(GL_POLYGON);
         glVertex2f(0.0, 0.0);
         glVertex2f(1.0, 0.2);
         glVertex2f(1.0, -0.2);
