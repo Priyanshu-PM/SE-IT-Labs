@@ -24,7 +24,10 @@ void drawWindMill()
     glTranslatef(0, 3, 0);
     glColor3f(1.0, 0.0, 0.0);
     glRotated(frameNumber*(180.0/45), 0, 0, 1);
-.
+
+    for(int i = 0; i < 4; i++)
+    {
+        glRotated(90, 0, 0, 1);
         glVertex2f(0.0, 0.0);
         glVertex2f(1.0, 0.2);
         glVertex2f(1.0, -0.2);
