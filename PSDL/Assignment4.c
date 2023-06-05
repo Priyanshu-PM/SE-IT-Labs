@@ -11,35 +11,27 @@
 void delay(void)
 {
 
-    //  prescaler of 1:256
-    T0CON = 0x07;
-    TMR0 = 18720;
+    T0CON = 0x07;   //  prescaler of 1:256
+    TMR0 = 18720;   //  calculated delay
+    
+    T0CONbits.TMR0ON = 1;   //  turning the Timer 0 on
 
-    //  turning the Timer 0 on
-    T0CONbits.TMR0ON = 1;
+    INTCONbits.TMR0IF = 0;  //  turning of the TMR0 interrupt flag
 
-    //  turning of the TMR0 interrupt flag
-    INTCONbits.TMR0IF = 0;
+    while(INTCONbits.TMR0IF == 0);  //  counting till the interrupt occurs or TMR0IF is not set to 1
 
-    //  counting till the interrupt occurs or TMR0IF is not set to 1
-    while(INTCONbits.TMR0IF == 0);
+    T0CONbits.TMR0ON = 0;   //  turning the timer off
 
-    //  turning the timer off
-    T0CONbits.TMR0ON = 0;
-
-    //  turning the interrupt flag off after the interrupt has occured
-    INTCONbits.TMR0IF = 0;
+    INTCONbits.TMR0IF = 0;  //  turning the interrupt flag off after the interrupt has occured
     return;
 }
 void main(void)
 {
 
-    //  setting PORT B as output
-    TRISA = 0;
+    
+    TRISB = 0;  //  setting PORT B as output
 
-    //  changing the values of PORTB accordingly to generate specific pattern
-
-    PORTB = 0x00000001;
+    PORTB = 0x00000001; //  changing the values of PORTB accordingly to generate specific pattern
     while(1)
     {
         delay();
@@ -62,8 +54,6 @@ void main(void)
         PORTB = 0x00000001;
 
     }
-
-    //  end of program
 
     return;
 }

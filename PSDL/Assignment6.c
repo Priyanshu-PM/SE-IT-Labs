@@ -25,35 +25,26 @@ void __interrupt() relay()
 
     }
 
-    //  turn the LED off, turn the global interrupt enable on
-    PORTAbits.RA4 = 0;
+    PORTAbits.RA4 = 0;      //  turn the LED off, turn the global interrupt enable on
     INTCONbits.GIE = 1;
     
-    //  reset the interrupt flag
-    INTCON3bits.INT1IF = 0;
+    INTCON3bits.INT1IF = 0;     //  reset the interrupt flag
 
 }
 
 void main(void)
 {
+    TRISBbits.TRISB1 = 1;       // input at switch
 
-    // input at switch
-    TRISBbits.TRISB1 = 1;
-
-    //  output ad PORTA.RA4
-    TRISAbits.TRISA4 = 0;
+    TRISAbits.TRISA4 = 0;       //  output ad PORTA.RA4
     PORTAbits.RA4 = 0;
 
-    // interrupt enable
-    INTCON3bits.INT1IE = 1;
+    INTCON3bits.INT1IE = 1;     // interrupt enable
     INTCON3bits.INT1IF = 0;
 
+    INTCON2bits.INTEDG1 = 0;    // interrupt on high to low transition
 
-    // interrupt on high to low transition
-    INTCON2bits.INTEDG1 = 0;
-
-    // enabling the interrupt enables
-    INTCONbits.GIE = 1;
+    INTCONbits.GIE = 1;     // enabling the interrupt enables
     INTCONbits.PEIE = 1;
 
     while(1);
