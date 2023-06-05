@@ -1,5 +1,5 @@
 //  Write a Program in OpenGL on Linux Platform to draw a Dash-Dot-Dash Line & Dash
-//  Line using DDA Line Drawing Algorithm. Divide the screen in four quadrants with
+//  Line using bresenhams Line Drawing Algorithm. Divide the screen in four quadrants with
 //  centre as (0,0). Use Mouse / Without Mouse to Plot the Points.
 
 #include <windows.h>
