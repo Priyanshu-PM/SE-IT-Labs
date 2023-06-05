@@ -10,30 +10,20 @@
 
 void main(void)
 {
+    BSR = 0x00; // bank select register (0 selected by default)
 
-    // bank select register (0 selected by default)
-    BSR = 0x00;
-
-    // creating an array of integers
-    int arr[100];
+    int arr[100]; // creating an array of integers
     int sum = 0;
 
     for(int i = 0; i< 100; i++)
     {
-        //  storing the numbers in sum variable
-        arr[i] = 1;
+        arr[i] = 1; //  storing the numbers in sum variable
         sum += arr[i];
     }
-    
-    //  For demonstration purpose
-    BSR = 0x01;
 
-    //  initializing the TMR0 with sum
-    TMR0 = sum;
+    BSR = 0x01; //  BSR change
+    TMR0 = sum; //  initializing the TMR0 with sum
 
-    //  reinitializing the sum variable
-    sum = 100;
-
-    //  end of program
+    sum = 100;   //  reinitializing the sum variable
     return;
 }

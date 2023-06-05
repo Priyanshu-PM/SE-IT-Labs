@@ -8,20 +8,13 @@
 
 void main(void)
 {
-
-    //  initializing the registers
-    TMR0 = 0x09;
+    TMR0 = 0x09;    //  initializing the registers
     TMR1 = 0x05;
 
-    //  performing the addition of two registers
-    TMR2 = TMR0 + TMR1;
+    TMR2 = TMR0 + TMR1; //  performing the addition of two registers
 
-    //  setting port A as output
-    TRISA = 0;
+    TRISA = 0;  //  setting port A as output
 
-    //  displaying at port A
-    PORTA = TMR2;
-
-    //  end of program
+    PORTA = TMR2;   //  displaying at port A
     return;
 }
