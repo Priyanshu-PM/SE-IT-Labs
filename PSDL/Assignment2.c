@@ -24,12 +24,12 @@ void main(void)
         arr[i] = 1;
         sum += arr[i];
     }
+    
+    //  For demonstration purpose
+    BSR = 0x01;
 
     //  initializing the TMR0 with sum
     TMR0 = sum;
-
-    //  For demonstration purpose
-    BSR = 0x01;
 
     //  reinitializing the sum variable
     sum = 100;
