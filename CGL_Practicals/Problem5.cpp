@@ -1,6 +1,6 @@
-//  Write a Program in OpenGL on Linux Platform to draw a Dash-Dot-Dash Line & Dash
-//  Line using bresenhams Line Drawing Algorithm. Divide the screen in four quadrants with
-//  centre as (0,0). Use Mouse / Without Mouse to Plot the Points.
+//  Write a Program in OpenGL on Linux Platform to draw following pattern by a Line
+//  using bresenhams Line Drawing Algorithm. (Use Mouse / Without Mouse to Plot the Points.) 
+//  ( A Monitor Screen with a Hill On Display )
 
 #include <windows.h>
 #include <GL/glut.h>
