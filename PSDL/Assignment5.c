@@ -47,5 +47,6 @@ void main(void)
 
     T1CONbits.TMR1ON = 1;
 
+    while(1);
     return;
 }
