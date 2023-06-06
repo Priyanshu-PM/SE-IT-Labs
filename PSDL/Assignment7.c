@@ -57,8 +57,8 @@ void main(void) {
             CCPR1L = i;
             for(int j = 0; j < 1000; j++)
             {
-                for(int k = 0; k < 10000; k++);
-                
+                for(int k = 0; k < 10000; k++); //  this loop doesn't have body
+
                 PORTAbits.RA4 = ~PORTAbits.RA4; //  changing the LED mode to display the speed change of the motor
             }
             
