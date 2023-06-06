@@ -18,12 +18,26 @@ void delay(int n)
 }
 void sendInstruction(unsigned char command)
 {
+    LCD_RS = 0;
+    PORTB = command;
 
+    LCD_EN = 1;
+    delay(1);
+
+    LCD_EN = 0;
+    delay(1);
 }
 
 void sendData(unsigned char data)
 {
+    LCD_RS = 1;
+    PORTB = data;
 
+    LCD_EN = 1;
+    delay(1);
+
+    LCD_EN = 0;
+    delay(1);
 
 }
 
@@ -31,5 +45,8 @@ void sendData(unsigned char data)
 void main(void)
 {
 
+    ADCON1 = 0x0f;
+    
+    TRISB = 0;
     return;
 }
