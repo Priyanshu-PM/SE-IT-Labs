@@ -52,12 +52,15 @@ void main(void) {
         
         TMR2ON = 1; //  timer 2 is on
         TMR2IF = 0; //  interrupt flag disable
-        for(int i = 2; i < 1000; i++)
+        for(int i = 2; i < 255; i += 50)
         {
             CCPR1L = i;
-            for(int j = 0; j < 10000; j++); //  this loop doesn't have a body
-            
-            PORTAbits.RA4 = ~PORTAbits.RA4; //  changing the LED mode to display the speed change of the motor
+            for(int j = 0; j < 1000; j++)
+            {
+                for(int k = 0; k < 10000; k++);
+                
+                PORTAbits.RA4 = ~PORTAbits.RA4; //  changing the LED mode to display the speed change of the motor
+            }
             
         }
     }
