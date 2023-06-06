@@ -47,7 +47,7 @@ void main(void) {
     while(1)
     {
         TMR2 = 0;
-        CCPR1L = 2;     //  CCPR1L calculated value (used for storing duty cycle)
+        CCPR1L = 2;     // duty cycle : 10% |  CCPR1L calculated value (used for storing duty cycle)
         PR2 = 250;
         
         TMR2ON = 1; //  timer 2 is on
